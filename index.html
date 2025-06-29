@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sweet Delights Bakery - Order Now!</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Font - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fcf8f3; /* Light cream background */
+        }
+        .container {
+            max-width: 960px;
+        }
+        .section-title {
+            color: #d2691e; /* Chocolate brown for titles */
+            border-bottom: 2px solid #f2d7b4; /* Light peach border */
+            padding-bottom: 0.5rem;
+            margin-bottom: 2rem;
+        }
+        .product-card {
+            background-color: #ffffff;
+            border: 1px solid #f2d7b4;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+        .btn-primary {
+            background-color: #d2691e; /* Chocolate brown */
+            color: #ffffff;
+            transition: background-color 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: #a0522d; /* Darker brown */
+        }
+        .input-field {
+            border: 1px solid #f2d7b4;
+            background-color: #fffaf0; /* Ivory for input fields */
+        }
+        .order-summary {
+            background-color: #fffaf0; /* Ivory background for summary */
+            border: 1px solid #f2d7b4;
+        }
+        .modal {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+    <div class="min-h-screen flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8">
+        <!-- Header Section -->
+        <header class="text-center mb-12">
+            <h1 class="text-5xl font-extrabold text-d2691e mb-4">Sweet Delights Bakery</h1>
+            <p class="text-xl text-gray-600">Freshly Baked Goods for Every Occasion</p>
+        </header>
+
+        <!-- Menu Section -->
+        <section id="menu" class="container w-full bg-white rounded-xl shadow-lg p-8 mb-12">
+            <h2 class="text-3xl font-bold section-title text-center mb-8">Our Delicious Menu</h2>
+            <div id="product-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Product cards will be dynamically loaded here -->
+            </div>
+        </section>
+
+        <!-- Order Form Section -->
+        <section id="order-form-section" class="container w-full bg-white rounded-xl shadow-lg p-8 mb-12">
+            <h2 class="text-3xl font-bold section-title text-center mb-8">Place Your Order</h2>
+            <form id="order-form" class="space-y-6">
+                <!-- Customer Details -->
+                <div class="rounded-lg p-6 bg-fffaf0 border border-f2d7b4">
+                    <h3 class="text-2xl font-semibold mb-4 text-d2691e">Your Details</h3>
+                    <div>
+                        <label for="customerName" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                        <input type="text" id="customerName" name="customerName" required
+                               class="input-field w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-d2691e">
+                    </div>
+                    <div>
+                        <label for="customerPhone" class="block text-sm font-medium text-gray-700 mb-1 mt-4">Phone Number</label>
+                        <input type="tel" id="customerPhone" name="customerPhone" required
+                               class="input-field w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-d2691e">
+                    </div>
+                    <div>
+                        <label for="customerEmail" class="block text-sm font-medium text-gray-700 mb-1 mt-4">Email Address (Optional)</label>
+                        <input type="email" id="customerEmail" name="customerEmail"
+                               class="input-field w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-d2691e">
+                    </div>
+                    <div>
+                        <label for="deliveryDate" class="block text-sm font-medium text-gray-700 mb-1 mt-4">Preferred Delivery/Pickup Date</label>
+                        <input type="date" id="deliveryDate" name="deliveryDate" required
+                               class="input-field w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-d2691e">
+                    </div>
+                    <div>
+                        <label for="deliveryTime" class="block text-sm font-medium text-gray-700 mb-1 mt-4">Preferred Delivery/Pickup Time</label>
+                        <input type="time" id="deliveryTime" name="deliveryTime" required
+                               class="input-field w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-d2691e">
+                    </div>
+                    <div>
+                        <label for="specialInstructions" class="block text-sm font-medium text-gray-700 mb-1 mt-4">Special Instructions (e.g., allergies, custom message)</label>
+                        <textarea id="specialInstructions" name="specialInstructions" rows="3"
+                                  class="input-field w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-d2691e"></textarea>
+                    </div>
+                </div>
+
+                <!-- Order Summary & Total -->
+                <div class="order-summary rounded-lg p-6">
+                    <h3 class="text-2xl font-semibold mb-4 text-d2691e">Your Order Summary</h3>
+                    <div id="order-summary-items" class="space-y-2 mb-4">
+                        <!-- Order items will be displayed here -->
+                        <p class="text-gray-500 text-center" id="empty-cart-message">Your cart is empty. Add items from the menu above!</p>
+                    </div>
+                    <div class="flex justify-between items-center text-xl font-bold border-t pt-4 border-f2d7b4">
+                        <span>Total:</span>
+                        <span id="order-total">₹0.00</span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary w-full py-3 rounded-lg text-lg font-semibold shadow-md">Place Order</button>
+            </form>
+        </section>
+
+        <!-- About Us / Contact Section -->
+        <section id="contact" class="container w-full bg-white rounded-xl shadow-lg p-8">
+            <h2 class="text-3xl font-bold section-title text-center mb-8">Contact & About Us</h2>
+            <div class="text-center space-y-4 text-gray-700">
+                <p>We are a small business passionate about baking fresh, delicious treats for you!</p>
+                <p>For custom orders or inquiries, please reach out to us:</p>
+                <p class="font-semibold">Phone: +91 98765 43210</p>
+                <p class="font-semibold">Email: info@sweetdelights.com</p>
+                <p>Follow us on <a href="#" class="text-d2691e hover:underline font-semibold">Instagram</a> and <a href="#" class="text-d2691e hover:underline font-semibold">Facebook</a>!</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="mt-12 text-center text-gray-500 text-sm">
+            &copy; 2025 Sweet Delights Bakery. All rights reserved.
+        </footer>
+    </div>
+
+    <!-- Order Confirmation Modal -->
+    <div id="order-modal" class="modal fixed inset-0 flex items-center justify-center p-4 hidden">
+        <div class="modal-content bg-white p-8 rounded-lg shadow-xl max-w-lg w-full transform transition-all duration-300 ease-out scale-95 opacity-0">
+            <h2 class="text-3xl font-bold text-d2691e mb-6 text-center">Order Confirmation</h2>
+            <p class="text-gray-700 mb-4">Thank you for your order! Please copy the details below and send them to us via WhatsApp, email, or your preferred method to confirm your order.</p>
+            <textarea id="order-details-output" readonly rows="10" class="w-full p-4 border border-f2d7b4 rounded-lg bg-fffaf0 text-gray-800 text-sm mb-6"></textarea>
+            <button id="copy-order-btn" class="btn-primary w-full py-3 rounded-lg text-lg font-semibold shadow-md mb-4">Copy Order Details</button>
+            <button id="close-modal-btn" class="w-full py-2 rounded-lg text-d2691e border border-d2691e hover:bg-d2691e hover:text-white transition-colors duration-200">Close</button>
+        </div>
+    </div>
+
+
+    <script>
+        // Array of products with their details
+        const products = [
+            { id: 'chocolate-chip-cookies', name: 'Chocolate Chip Cookies (12 pcs)', description: 'Classic cookies with rich chocolate chips.', price: 250, imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Cookies' },
+            { id: 'red-velvet-cupcakes', name: 'Red Velvet Cupcakes (6 pcs)', description: 'Moist red velvet with cream cheese frosting.', price: 350, imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Cupcakes' },
+            { id: 'lemon-blueberry-loaf', name: 'Lemon Blueberry Loaf', description: 'Tangy lemon and sweet blueberries in a delightful loaf cake.', price: 400, imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Loaf' },
+            { id: 'chocolate-fudge-cake', name: 'Chocolate Fudge Cake (1 kg)', description: 'Decadent chocolate cake with rich fudge frosting.', price: 800, imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Cake' },
+            { id: 'assorted-brownies', name: 'Assorted Brownies (6 pcs)', description: 'A mix of classic, walnut, and fudge brownies.', price: 300, imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Brownies' },
+            { id: 'apple-pie-mini', name: 'Mini Apple Pie', description: 'Individual apple pies with a flaky crust and spiced apple filling.', price: 180, imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Pie' }
+        ];
+
+        let cart = {}; // Stores product ID and quantity
+
+        const productListDiv = document.getElementById('product-list');
+        const orderSummaryItemsDiv = document.getElementById('order-summary-items');
+        const orderTotalSpan = document.getElementById('order-total');
+        const orderForm = document.getElementById('order-form');
+        const orderModal = document.getElementById('order-modal');
+        const orderDetailsOutput = document.getElementById('order-details-output');
+        const copyOrderBtn = document.getElementById('copy-order-btn');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const emptyCartMessage = document.getElementById('empty-cart-message');
+
+        /**
+         * Renders all product cards on the menu.
+         */
+        function renderProducts() {
+            productListDiv.innerHTML = ''; // Clear existing products
+            products.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card rounded-lg p-6 flex flex-col items-center text-center';
+                productCard.innerHTML = `
+                    <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-40 object-cover rounded-md mb-4 onerror="this.onerror=null;this.src='https://placehold.co/400x300/f2d7b4/d2691e?text=Image+Error';">
+                    <h3 class="text-xl font-semibold mb-2 text-d2691e">${product.name}</h3>
+                    <p class="text-gray-600 mb-3">${product.description}</p>
+                    <p class="text-2xl font-bold text-gray-800 mb-4">₹${product.price.toFixed(2)}</p>
+                    <div class="flex items-center space-x-2 mt-auto">
+                        <button class="quantity-btn bg-gray-200 text-gray-700 px-3 py-1 rounded-full hover:bg-gray-300 transition-colors" data-id="${product.id}" data-action="decrease">-</button>
+                        <input type="number" class="quantity-input w-16 text-center input-field rounded-lg" value="${cart[product.id] || 0}" min="0" data-id="${product.id}">
+                        <button class="quantity-btn bg-gray-200 text-gray-700 px-3 py-1 rounded-full hover:bg-gray-300 transition-colors" data-id="${product.id}" data-action="increase">+</button>
+                    </div>
+                `;
+                productListDiv.appendChild(productCard);
+            });
+            addQuantityEventListeners(); // Attach event listeners after rendering
+        }
+
+        /**
+         * Attaches event listeners to quantity buttons and input fields.
+         */
+        function addQuantityEventListeners() {
+            document.querySelectorAll('.quantity-btn').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const productId = event.target.dataset.id;
+                    const action = event.target.dataset.action;
+                    const input = document.querySelector(`.quantity-input[data-id="${productId}"]`);
+                    let quantity = parseInt(input.value);
+
+                    if (action === 'increase') {
+                        quantity++;
+                    } else if (action === 'decrease' && quantity > 0) {
+                        quantity--;
+                    }
+                    input.value = quantity;
+                    updateCart(productId, quantity);
+                });
+            });
+
+            document.querySelectorAll('.quantity-input').forEach(input => {
+                input.addEventListener('change', (event) => {
+                    const productId = event.target.dataset.id;
+                    let quantity = parseInt(event.target.value);
+                    if (isNaN(quantity) || quantity < 0) {
+                        quantity = 0; // Default to 0 if invalid
+                        event.target.value = 0;
+                    }
+                    updateCart(productId, quantity);
+                });
+            });
+        }
+
+        /**
+         * Updates the cart based on product quantity.
+         * @param {string} productId - The ID of the product.
+         * @param {number} quantity - The new quantity of the product.
+         */
+        function updateCart(productId, quantity) {
+            if (quantity > 0) {
+                cart[productId] = quantity;
+            } else {
+                delete cart[productId];
+            }
+            renderOrderSummary();
+        }
+
+        /**
+         * Renders the order summary section and calculates the total.
+         */
+        function renderOrderSummary() {
+            orderSummaryItemsDiv.innerHTML = ''; // Clear existing items
+            let total = 0;
+            let hasItemsInCart = false;
+
+            for (const productId in cart) {
+                const product = products.find(p => p.id === productId);
+                if (product) {
+                    hasItemsInCart = true;
+                    const quantity = cart[productId];
+                    const itemTotal = product.price * quantity;
+                    total += itemTotal;
+
+                    const summaryItem = document.createElement('div');
+                    summaryItem.className = 'flex justify-between items-center py-2 border-b border-gray-200 last:border-b-0';
+                    summaryItem.innerHTML = `
+                        <span>${product.name} x ${quantity}</span>
+                        <span>₹${itemTotal.toFixed(2)}</span>
+                    `;
+                    orderSummaryItemsDiv.appendChild(summaryItem);
+                }
+            }
+
+            if (hasItemsInCart) {
+                emptyCartMessage.classList.add('hidden');
+            } else {
+                emptyCartMessage.classList.remove('hidden');
+            }
+
+            orderTotalSpan.textContent = `₹${total.toFixed(2)}`;
+        }
+
+        /**
+         * Handles the order form submission.
+         * @param {Event} event - The form submission event.
+         */
+        orderForm.addEventListener('submit', (event) => {
+            event.preventDefault(); // Prevent default form submission
+
+            if (Object.keys(cart).length === 0) {
+                alert('Your cart is empty! Please add some items to place an order.');
+                return;
+            }
+
+            const customerName = document.getElementById('customerName').value;
+            const customerPhone = document.getElementById('customerPhone').value;
+            const customerEmail = document.getElementById('customerEmail').value;
+            const deliveryDate = document.getElementById('deliveryDate').value;
+            const deliveryTime = document.getElementById('deliveryTime').value;
+            const specialInstructions = document.getElementById('specialInstructions').value;
+
+            let orderDetails = `--- Sweet Delights Bakery Order ---\n\n`;
+            orderDetails += `Customer Name: ${customerName}\n`;
+            orderDetails += `Phone Number: ${customerPhone}\n`;
+            if (customerEmail) {
+                orderDetails += `Email: ${customerEmail}\n`;
+            }
+            orderDetails += `Preferred Date: ${deliveryDate}\n`;
+            orderDetails += `Preferred Time: ${deliveryTime}\n`;
+            if (specialInstructions) {
+                orderDetails += `Special Instructions: ${specialInstructions}\n`;
+            }
+            orderDetails += `\n--- Order Items ---\n`;
+
+            let total = 0;
+            for (const productId in cart) {
+                const product = products.find(p => p.id === productId);
+                if (product) {
+                    const quantity = cart[productId];
+                    const itemTotal = product.price * quantity;
+                    orderDetails += `${product.name} (x${quantity}) - ₹${itemTotal.toFixed(2)}\n`;
+                    total += itemTotal;
+                }
+            }
+            orderDetails += `\nTotal Amount: ₹${total.toFixed(2)}\n\n`;
+            orderDetails += `Please send this message to us to confirm your order. We'll get back to you shortly!`;
+
+            orderDetailsOutput.value = orderDetails;
+            orderModal.classList.remove('hidden');
+            setTimeout(() => { // Animate modal in
+                orderModal.querySelector('.modal-content').classList.remove('scale-95', 'opacity-0');
+                orderModal.querySelector('.modal-content').classList.add('scale-100', 'opacity-100');
+            }, 50); // Small delay to allow CSS transition
+
+            // Reset the form and cart after order is placed
+            orderForm.reset();
+            cart = {};
+            renderProducts(); // Re-render products to reset quantities to 0
+            renderOrderSummary(); // Clear order summary
+        });
+
+        /**
+         * Copies the order details to the clipboard.
+         */
+        copyOrderBtn.addEventListener('click', () => {
+            orderDetailsOutput.select();
+            document.execCommand('copy');
+            copyOrderBtn.textContent = 'Copied!';
+            setTimeout(() => {
+                copyOrderBtn.textContent = 'Copy Order Details';
+            }, 2000);
+        });
+
+        /**
+         * Closes the order confirmation modal.
+         */
+        closeModalBtn.addEventListener('click', () => {
+            orderModal.querySelector('.modal-content').classList.remove('scale-100', 'opacity-100');
+            orderModal.querySelector('.modal-content').classList.add('scale-95', 'opacity-0');
+            setTimeout(() => { // Hide modal after animation
+                orderModal.classList.add('hidden');
+            }, 300);
+        });
+
+        // Initialize the page on load
+        window.onload = () => {
+            renderProducts();
+            renderOrderSummary();
+        };
+    </script>
+</body>
+</html>
