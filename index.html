@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +7,7 @@
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Font - Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <!-- QRious for QR Code Generation -->
     <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
     <!-- Firebase SDKs -->
@@ -32,9 +32,9 @@
 
         // Make db and other necessary Firestore functions globally accessible
         window.db = db;
-        window.firebaseCollection = collection; // Make collection globally available
-        window.firebaseGetDocs = getDocs;       // Make getDocs globally available
-        window.firebaseAddDoc = addDoc;         // Make addDoc globally available
+        window.firebaseCollection = collection;
+        window.firebaseGetDocs = getDocs;
+        window.firebaseAddDoc = addDoc;
         window.productsFromFirestore = []; // Global array to store fetched products
     </script>
     <style>
@@ -60,22 +60,33 @@
             background-color: #ffffff;
             border: 1px solid #f2d7b4;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            transition: transform 0.2s;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
         .product-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
         }
         .btn-primary {
             background-color: #d2691e; /* Chocolate brown */
             color: #ffffff;
-            transition: background-color 0.2s;
+            transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
         }
         .btn-primary:hover {
             background-color: #a0522d; /* Darker brown */
+            transform: translateY(-1px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
         }
         .input-field {
             border: 1px solid #f2d7b4;
             background-color: #fffaf0; /* Ivory for input fields */
+            padding: 0.75rem 1rem; /* Added padding */
+            border-radius: 0.5rem; /* Added rounded corners */
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #d2691e;
+            box-shadow: 0 0 0 3px rgba(210, 105, 30, 0.2); /* Focus ring */
         }
         .order-summary {
             background-color: #fffaf0; /* Ivory background for summary */
@@ -112,20 +123,71 @@
             background-color: #f2d7b4;
             color: #d2691e;
         }
+        .nav-link {
+            transition: color 0.2s, background-color 0.2s;
+        }
+        .nav-link:hover {
+            color: #d2691e;
+            background-color: #f2d7b4;
+            border-radius: 0.5rem;
+        }
+        .category-button {
+            background-color: #f2d7b4; /* Light peach */
+            color: #d2691e; /* Chocolate brown */
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px; /* Pill shape */
+            font-weight: 600;
+            transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
+            display: inline-block; /* For proper spacing and sizing */
+        }
+        .category-button:hover {
+            background-color: #d2691e; /* Darker brown */
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 <body class="text-gray-800">
+
+    <!-- Sticky Navigation Bar -->
+    <nav class="sticky top-0 z-50 w-full bg-white shadow-lg py-4 px-8 rounded-b-xl">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="#hero" class="text-3xl font-extrabold text-d2691e">Yumm Healthy Bites</a>
+            <div class="space-x-6">
+                <a href="#hero" class="text-gray-700 font-semibold px-3 py-2 nav-link">Home</a>
+                <a href="#menu" class="text-gray-700 font-semibold px-3 py-2 nav-link">Menu</a>
+                <a href="#order-form-section" class="text-gray-700 font-semibold px-3 py-2 nav-link">Order Now</a>
+                <a href="#contact" class="text-gray-700 font-semibold px-3 py-2 nav-link">Contact</a>
+            </div>
+        </div>
+    </nav>
+
     <div class="min-h-screen flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8">
-        <!-- Header Section -->
-        <header class="text-center mb-12">
-            <h1 class="text-5xl font-extrabold text-d2691e mb-4">Yumm Healthy Bites</h1>
-            <p class="text-xl text-gray-600">Indulge your cravings without the guilt. Our baked goods are crafted with whole grains and jaggery.</p>
-        </header>
+        <!-- Hero Section -->
+        <section id="hero" class="w-full relative h-[400px] flex items-center justify-center text-center mb-12 rounded-xl overflow-hidden shadow-xl"
+            style="background-image: url('https://placehold.co/1200x400/f2d7b4/d2691e?text=Delicious+Baked+Goods'); background-size: cover; background-position: center;">
+            <div class="absolute inset-0 bg-black opacity-40"></div>
+            <div class="relative z-10 text-white p-8 rounded-lg">
+                <h1 class="text-5xl font-extrabold mb-4 drop-shadow-lg">Baked with Love, Crafted for Health</h1>
+                <p class="text-2xl font-light mb-8 drop-shadow-md">Indulge your cravings without the guilt. Our baked goods are crafted with whole grains and jaggery.</p>
+                <a href="#menu" class="btn-primary px-8 py-3 rounded-full text-xl font-bold shadow-lg hover:scale-105">Explore Our Menu</a>
+            </div>
+        </section>
 
         <!-- Menu Section -->
         <section id="menu" class="container w-full bg-white rounded-xl shadow-lg p-8 mb-12">
-            <h2 class="text-3xl font-bold section-title text-center mb-8">Our Delicious Menu</h2>
-            <div id="loading-menu" class="text-center text-gray-500 text-lg">Loading menu...</div>
+            <h2 class="text-4xl font-extrabold section-title text-center mb-10">Our Delicious Menu</h2>
+
+            <!-- Category Navigation Buttons -->
+            <div class="flex flex-wrap justify-center gap-4 mb-10">
+                <a href="#cakes-section" class="category-button">Cakes</a>
+                <a href="#cookies-section" class="category-button">Cookies</a>
+                <a href="#cupcakes-section" class="category-button">Cupcakes</a>
+                <a href="#others-section" class="category-button">Others</a>
+            </div>
+
+            <div id="loading-menu" class="text-center text-gray-500 text-lg py-10">Loading menu...</div>
             <div id="product-list" class="flex flex-col gap-10 hidden">
                 <!-- Product categories and cards will be dynamically loaded here -->
             </div>
@@ -133,7 +195,7 @@
 
         <!-- Order Form Section -->
         <section id="order-form-section" class="container w-full bg-white rounded-xl shadow-lg p-8 mb-12">
-            <h2 class="text-3xl font-bold section-title text-center mb-8">Place Your Order</h2>
+            <h2 class="text-4xl font-extrabold section-title text-center mb-10">Place Your Order</h2>
             <form id="order-form" class="space-y-6">
                 <!-- Customer Details -->
                 <div class="rounded-lg p-6 bg-fffaf0 border border-f2d7b4">
@@ -141,22 +203,22 @@
                     <div>
                         <label for="customerName" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
                         <input type="text" id="customerName" name="customerName" required
-                               class="input-field w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-d2691e">
+                               class="input-field w-full">
                     </div>
                     <div>
                         <label for="customerPhone" class="block text-sm font-medium text-gray-700 mb-1 mt-4">Phone Number</label>
                         <input type="tel" id="customerPhone" name="customerPhone" required
-                               class="input-field w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-d2691e">
+                               class="input-field w-full">
                     </div>
                     <div>
                         <label for="customerEmail" class="block text-sm font-medium text-gray-700 mb-1 mt-4">Email Address (Optional)</label>
                         <input type="email" id="customerEmail" name="customerEmail"
-                               class="input-field w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-d2691e">
+                               class="input-field w-full">
                     </div>
                     <div>
                         <label for="specialInstructions" class="block text-sm font-medium text-gray-700 mb-1 mt-4">Special Instructions (e.g., allergies, custom message)</label>
                         <textarea id="specialInstructions" name="specialInstructions" rows="3"
-                                  class="input-field w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-d2691e"></textarea>
+                                  class="input-field w-full"></textarea>
                     </div>
                 </div>
 
@@ -165,7 +227,7 @@
                     <h3 class="text-2xl font-semibold mb-4 text-d2691e">Your Order Summary</h3>
                     <div id="order-summary-items" class="space-y-2 mb-4">
                         <!-- Order items will be displayed here -->
-                        <p class="text-gray-500 text-center" id="empty-cart-message">Your cart is empty. Add items from the menu above!</p>
+                        <p class="text-gray-500 text-center py-4" id="empty-cart-message">Your cart is empty. Add items from the menu above!</p>
                     </div>
                     <div class="flex justify-between items-center text-xl font-bold border-t pt-4 border-f2d7b4">
                         <span>Total:</span>
@@ -179,13 +241,13 @@
 
         <!-- About Us / Contact Section -->
         <section id="contact" class="container w-full bg-white rounded-xl shadow-lg p-8">
-            <h2 class="text-3xl font-bold section-title text-center mb-8">Contact & About Us</h2>
+            <h2 class="text-4xl font-extrabold section-title text-center mb-10">Contact & About Us</h2>
             <div class="text-center space-y-4 text-gray-700">
-                <p>We are a small business passionate about baking fresh, delicious treats for you!</p>
-                <p>For custom orders or inquiries, please reach out to us:</p>
-                <p class="font-semibold">Phone: +91 97675 19630</p>
-                <p class="font-semibold">Email: ruchiraagrawal@yummhealthy.com</p>
-                <p>Follow us on <a href="#" class="text-d2691e hover:underline font-semibold">Instagram</a> and <a href="#" class="text-d2691e hover:underline font-semibold">Facebook</a>!</p>
+                <p class="text-lg">We are a small business passionate about baking fresh, delicious treats for you!</p>
+                <p class="text-lg">For custom orders or inquiries, please reach out to us:</p>
+                <p class="font-semibold text-xl">Phone: +91 97675 19630</p>
+                <p class="font-semibold text-xl">Email: ruchiraagrawal@yummhealthy.com</p>
+                <p class="text-lg">Follow us on <a href="#" class="text-d2691e hover:underline font-semibold">Instagram</a> and <a href="#" class="text-d2691e hover:underline font-semibold">Facebook</a>!</p>
             </div>
         </section>
 
@@ -285,9 +347,10 @@
             categories.forEach(category => {
                 const categoryProducts = productsFromFirestore.filter(p => p.category === category);
                 if (categoryProducts.length > 0) {
+                    const categoryId = category.toLowerCase().replace(/\s/g, '-') + '-section'; // e.g., 'cakes-section'
                     const categorySection = document.createElement('div');
                     categorySection.className = 'w-full mb-8'; // Full width, bottom margin
-                    categorySection.innerHTML = `<h3 class="text-2xl font-bold text-d2691e mb-6 border-b-2 border-f2d7b4 pb-2">${category}</h3>`;
+                    categorySection.innerHTML = `<h3 id="${categoryId}" class="text-3xl font-bold text-d2691e mb-6 border-b-2 border-f2d7b4 pb-2 pt-16 -mt-16">${category}</h3>`; // Added ID and padding/margin for scroll offset
                     const productsGrid = document.createElement('div');
                     productsGrid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8';
 
@@ -667,6 +730,17 @@
             fetchAndRenderProducts(); // Fetch from Firestore instead of direct render
             renderOrderSummary();
         };
+
+        // Smooth scroll for navigation links (including new category buttons)
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
     </script>
 </body>
 </html>
