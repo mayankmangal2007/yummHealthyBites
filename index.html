@@ -6,8 +6,8 @@
     <title>Yumm Healthy Bites - Order Now!</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Font - Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Google Font - Inter (Retaining this as it's modern and clean) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <!-- QRious for QR Code Generation -->
     <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
     <!-- Firebase SDKs -->
@@ -46,82 +46,110 @@
             background-position: center;
             background-attachment: fixed; /* Makes background static when scrolling */
             background-color: #fcf8f3; /* Fallback color */
+            overflow-x: hidden; /* Prevent horizontal scroll on mobile */
         }
         .container {
             max-width: 960px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 1rem; /* Added responsive padding */
+            padding-right: 1rem; /* Added responsive padding */
         }
         .section-title {
             color: #d2691e; /* Chocolate brown for titles */
             border-bottom: 2px solid #f2d7b4; /* Light peach border */
             padding-bottom: 0.5rem;
             margin-bottom: 2rem;
+            font-weight: 800; /* Extra bold for emphasis */
+            font-size: 3rem; /* Larger font for section titles */
+        }
+        @media (max-width: 768px) {
+            .section-title {
+                font-size: 2.5rem; /* Adjust for smaller screens */
+            }
         }
         .product-card {
             background-color: #ffffff;
             border: 1px solid #f2d7b4;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08); /* More pronounced shadow */
+            border-radius: 12px; /* Slightly more rounded */
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 1.5rem; /* Increased padding */
         }
         .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-8px); /* More noticeable lift */
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.15); /* Stronger shadow on hover */
+        }
+        .product-card img {
+            border-radius: 8px; /* Rounded images */
+            margin-bottom: 1rem;
+        }
+        .product-card h3 {
+            font-size: 1.5rem; /* Slightly larger product titles */
+            font-weight: 700;
         }
         .btn-primary {
             background-color: #d2691e; /* Chocolate brown */
             color: #ffffff;
-            transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
+            transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            padding: 1rem 2rem; /* More prominent buttons */
+            border-radius: 8px; /* Slightly rounded */
+            font-weight: 700;
         }
         .btn-primary:hover {
             background-color: #a0522d; /* Darker brown */
-            transform: translateY(-1px);
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px); /* Lift effect */
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); /* Stronger shadow */
         }
         .input-field {
-            border: 1px solid #f2d7b4;
+            border: 1px solid #e0c8b3; /* Softer border color */
             background-color: #fffaf0; /* Ivory for input fields */
-            padding: 0.75rem 1rem; /* Added padding */
-            border-radius: 0.5rem; /* Added rounded corners */
+            padding: 0.85rem 1.25rem; /* Increased padding */
+            border-radius: 0.625rem; /* More rounded corners */
             transition: border-color 0.2s, box-shadow 0.2s;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06); /* Subtle inner shadow */
         }
         .input-field:focus {
             outline: none;
             border-color: #d2691e;
-            box-shadow: 0 0 0 3px rgba(210, 105, 30, 0.2); /* Focus ring */
+            box-shadow: 0 0 0 4px rgba(210, 105, 30, 0.25); /* More visible focus ring */
         }
         .order-summary {
             background-color: #fffaf0; /* Ivory background for summary */
             border: 1px solid #f2d7b4;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
         }
         .modal {
-            background-color: rgba(0, 0, 0, 0.7);
+            background-color: rgba(0, 0, 0, 0.75); /* Darker overlay */
         }
         .modal-content {
-            transform: scale(0.95);
+            background-color: #ffffff;
+            border-radius: 16px; /* More rounded modal */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transform: scale(0.9); /* Start slightly smaller for better animation */
             opacity: 0;
-            transition: transform 0.3s ease-out, opacity 0.3s ease-out;
-            position: relative; /* Added for absolute positioning of close button */
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.4s ease-out; /* Bouncier transition */
         }
         .modal-content.scale-100 {
             transform: scale(1);
             opacity: 1;
         }
         .modal-close-btn {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: #a0522d;
-            cursor: pointer;
-            line-height: 1;
-            padding: 0.5rem;
+            font-size: 2rem; /* Larger close button */
+            color: #d2691e; /* Match theme color */
+            padding: 0.75rem; /* Larger hit area */
+            background-color: transparent;
             border-radius: 50%;
-            transition: background-color 0.2s, color 0.2s;
         }
         .modal-close-btn:hover {
             background-color: #f2d7b4;
-            color: #d2691e;
+            color: #a0522d;
+            transform: rotate(90deg); /* Little animation */
         }
         .nav-link {
             transition: color 0.2s, background-color 0.2s;
@@ -134,17 +162,71 @@
         .category-button {
             background-color: #f2d7b4; /* Light peach */
             color: #d2691e; /* Chocolate brown */
-            padding: 0.75rem 1.5rem;
+            padding: 0.8rem 1.8rem; /* More generous padding */
             border-radius: 9999px; /* Pill shape */
-            font-weight: 600;
-            transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
-            display: inline-block; /* For proper spacing and sizing */
+            font-weight: 700; /* Bolder font */
+            font-size: 1.1rem; /* Slightly larger text */
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+            display: inline-block;
         }
         .category-button:hover {
             background-color: #d2691e; /* Darker brown */
             color: #ffffff;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: translateY(-3px); /* More lift */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        /* Hero section specific styles for better text readability */
+        #hero .relative {
+            background-color: rgba(255, 255, 255, 0.1); /* Subtle transparent white background for text */
+            backdrop-filter: blur(2px); /* Slight blur behind text */
+            border-radius: 1rem;
+            padding: 2rem;
+        }
+        #hero h1 {
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+            font-size: 4.5rem;
+        }
+        #hero p {
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+            font-size: 2rem;
+        }
+        @media (max-width: 768px) {
+            #hero h1 {
+                font-size: 3rem;
+            }
+            #hero p {
+                font-size: 1.5rem;
+            }
+            .nav-item {
+                font-size: 0.875rem; /* Smaller nav links on small screens */
+            }
+            .category-button {
+                padding: 0.6rem 1.2rem;
+                font-size: 1rem;
+            }
+        }
+        @media (max-width: 640px) { /* Tailwind's sm breakpoint */
+            .product-card {
+                padding: 1rem;
+            }
+            .product-card h3 {
+                font-size: 1.25rem;
+            }
+            .product-card p {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Fade-in animation for product cards */
+        .fade-in-bottom {
+            opacity: 0;
+            transform: translateY(30px); /* Start from a bit below */
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out; /* Slower and smoother transition */
+        }
+
+        .fade-in-bottom.is-visible {
+            opacity: 1;
+            transform: translateY(0);
         }
     </style>
 </head>
@@ -152,50 +234,50 @@
 
     <!-- Sticky Navigation Bar -->
     <nav class="sticky top-0 z-50 w-full bg-white shadow-lg py-4 px-8 rounded-b-xl">
-        <div class="container mx-auto flex justify-between items-center">
-            <a href="#hero" class="text-3xl font-extrabold text-d2691e">Yumm Healthy Bites</a>
-            <div class="space-x-6">
-                <a href="#hero" class="text-gray-700 font-semibold px-3 py-2 nav-link">Home</a>
-                <a href="#menu" class="text-gray-700 font-semibold px-3 py-2 nav-link">Menu</a>
-                <a href="#order-form-section" class="text-gray-700 font-semibold px-3 py-2 nav-link">Order Now</a>
-                <a href="#contact" class="text-gray-700 font-semibold px-3 py-2 nav-link">Contact</a>
+        <div class="container mx-auto flex flex-col sm:flex-row justify-between items-center">
+            <a href="#hero" class="text-3xl font-extrabold text-d2691e mb-3 sm:mb-0">Yumm Healthy Bites</a>
+            <div class="flex flex-wrap justify-center space-x-4 sm:space-x-6">
+                <a href="#hero" class="text-gray-700 font-semibold px-3 py-2 nav-link nav-item">Home</a>
+                <a href="#menu" class="text-gray-700 font-semibold px-3 py-2 nav-link nav-item">Menu</a>
+                <a href="#order-form-section" class="text-gray-700 font-semibold px-3 py-2 nav-link nav-item">Order Now</a>
+                <a href="#contact" class="text-gray-700 font-semibold px-3 py-2 nav-link nav-item">Contact</a>
             </div>
         </div>
     </nav>
 
-    <div class="min-h-screen flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="min-h-screen flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8 w-full">
         <!-- Hero Section -->
-        <section id="hero" class="w-full relative h-[400px] flex items-center justify-center text-center mb-12 rounded-xl overflow-hidden shadow-xl"
-            style="background-image: url('https://placehold.co/1200x400/f2d7b4/d2691e?text=Delicious+Baked+Goods'); background-size: cover; background-position: center;">
+        <section id="hero" class="w-full relative h-[500px] flex items-center justify-center text-center mb-16 rounded-xl overflow-hidden shadow-xl"
+            style="background-image: url('https://placehold.co/1200x500/f2d7b4/d2691e?text=Delicious+Baked+Goods'); background-size: cover; background-position: center;">
             <div class="absolute inset-0 bg-black opacity-40"></div>
-            <div class="relative z-10 text-white p-8 rounded-lg">
-                <h1 class="text-5xl font-extrabold mb-4 drop-shadow-lg">Baked with Love, Crafted for Health</h1>
-                <p class="text-2xl font-light mb-8 drop-shadow-md">Indulge your cravings without the guilt. Our baked goods are crafted with whole grains and jaggery.</p>
-                <a href="#menu" class="btn-primary px-8 py-3 rounded-full text-xl font-bold shadow-lg hover:scale-105">Explore Our Menu</a>
+            <div class="relative z-10 text-white p-8 sm:p-12 rounded-lg max-w-3xl">
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-4 drop-shadow-lg leading-tight">Baked with Love, Crafted for Health</h1>
+                <p class="text-lg sm:text-xl lg:text-2xl font-light mb-8 drop-shadow-md">Indulge your cravings without the guilt. Our baked goods are crafted with whole grains and jaggery.</p>
+                <a href="#menu" class="btn-primary px-8 py-3 rounded-full text-lg sm:text-xl font-bold shadow-lg hover:scale-105">Explore Our Menu</a>
             </div>
         </section>
 
         <!-- Menu Section -->
-        <section id="menu" class="container w-full bg-white rounded-xl shadow-lg p-8 mb-12">
-            <h2 class="text-4xl font-extrabold section-title text-center mb-10">Our Delicious Menu</h2>
+        <section id="menu" class="container w-full bg-white rounded-xl shadow-lg p-8 mb-16">
+            <h2 class="text-center mb-10 section-title">Our Delicious Menu</h2>
 
             <!-- Category Navigation Buttons -->
-            <div class="flex flex-wrap justify-center gap-4 mb-10">
+            <div class="flex flex-wrap justify-center gap-3 sm:gap-4 mb-12">
                 <a href="#cakes-section" class="category-button">Cakes</a>
                 <a href="#cookies-section" class="category-button">Cookies</a>
                 <a href="#cupcakes-section" class="category-button">Cupcakes</a>
                 <a href="#others-section" class="category-button">Others</a>
             </div>
 
-            <div id="loading-menu" class="text-center text-gray-500 text-lg py-10">Loading menu...</div>
+            <div id="loading-menu" class="text-center text-gray-500 text-xl py-10">Loading menu...</div>
             <div id="product-list" class="flex flex-col gap-10 hidden">
                 <!-- Product categories and cards will be dynamically loaded here -->
             </div>
         </section>
 
         <!-- Order Form Section -->
-        <section id="order-form-section" class="container w-full bg-white rounded-xl shadow-lg p-8 mb-12">
-            <h2 class="text-4xl font-extrabold section-title text-center mb-10">Place Your Order</h2>
+        <section id="order-form-section" class="container w-full bg-white rounded-xl shadow-lg p-8 mb-16">
+            <h2 class="text-center mb-10 section-title">Place Your Order</h2>
             <form id="order-form" class="space-y-6">
                 <!-- Customer Details -->
                 <div class="rounded-lg p-6 bg-fffaf0 border border-f2d7b4">
@@ -241,7 +323,7 @@
 
         <!-- About Us / Contact Section -->
         <section id="contact" class="container w-full bg-white rounded-xl shadow-lg p-8">
-            <h2 class="text-4xl font-extrabold section-title text-center mb-10">Contact & About Us</h2>
+            <h2 class="text-center mb-10 section-title">Contact & About Us</h2>
             <div class="text-center space-y-4 text-gray-700">
                 <p class="text-lg">We are a small business passionate about baking fresh, delicious treats for you!</p>
                 <p class="text-lg">For custom orders or inquiries, please reach out to us:</p>
@@ -252,7 +334,7 @@
         </section>
 
         <!-- Footer -->
-        <footer class="mt-12 text-center text-gray-500 text-sm">
+        <footer class="mt-12 text-center text-gray-500 text-sm py-6">
             &copy; 2025 Yumm Healthy Bites. All rights reserved.
         </footer>
     </div>
@@ -350,13 +432,15 @@
                     const categoryId = category.toLowerCase().replace(/\s/g, '-') + '-section'; // e.g., 'cakes-section'
                     const categorySection = document.createElement('div');
                     categorySection.className = 'w-full mb-8'; // Full width, bottom margin
-                    categorySection.innerHTML = `<h3 id="${categoryId}" class="text-3xl font-bold text-d2691e mb-6 border-b-2 border-f2d7b4 pb-2 pt-16 -mt-16">${category}</h3>`; // Added ID and padding/margin for scroll offset
+                    // The pt-16 -mt-16 is crucial for the smooth scroll to land correctly below the sticky header.
+                    categorySection.innerHTML = `<h3 id="${categoryId}" class="text-3xl font-bold text-d2691e mb-6 border-b-2 border-f2d7b4 pb-2 pt-16 -mt-16">${category}</h3>`;
                     const productsGrid = document.createElement('div');
-                    productsGrid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8';
+                    // Added px-6 for left/right padding to give margin to the 3-item rows
+                    productsGrid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-6 sm:px-0';
 
                     categoryProducts.forEach(product => {
                         const productCard = document.createElement('div');
-                        productCard.className = 'product-card rounded-lg p-6 flex flex-col items-center text-center';
+                        productCard.className = 'product-card rounded-lg p-6 flex flex-col items-center text-center fade-in-bottom'; // Added fade-in-bottom class
 
                         let optionsHtml = '';
                         let initialQuantity = 0;
@@ -407,6 +491,7 @@
 
             addQuantityEventListeners();
             addOptionChangeListeners();
+            setupIntersectionObserver(); // Call the function to set up the observer
         }
 
         /**
@@ -725,18 +810,51 @@
         topCloseModalBtn.addEventListener('click', closeOrderModal);
 
 
+        // --- Intersection Observer for Fade-in Effect ---
+        function setupIntersectionObserver() {
+            const productCards = document.querySelectorAll('.product-card');
+            const observerOptions = {
+                root: null, // viewport as the root
+                rootMargin: '0px',
+                threshold: 0.1 // 10% of the element must be visible
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target); // Stop observing once visible
+                    }
+                });
+            }, observerOptions);
+
+            productCards.forEach(card => {
+                observer.observe(card);
+            });
+        }
+
+
         // Initialize the page on load
         window.onload = () => {
-            fetchAndRenderProducts(); // Fetch from Firestore instead of direct render
+            fetchAndRenderProducts(); // Fetch from Firestore and render products
             renderOrderSummary();
+            // setupIntersectionObserver() is called within renderProducts after cards are created.
         };
 
         // Smooth scroll for navigation links (including new category buttons)
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                // Adjust scroll position to account for the fixed header
+                const headerOffset = document.querySelector('nav').offsetHeight + 20; // Nav height + some padding
+                const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+                const offsetPosition = elementPosition - headerOffset;
+
+                window.scrollTo({
+                     top: offsetPosition,
+                     behavior: "smooth"
                 });
             });
         });
