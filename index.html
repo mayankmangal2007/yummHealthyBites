@@ -3,13 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sweet Delights Bakery - Order Now!</title>
+    <title>Yumm Healthy Bites - Order Now!</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Font - Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- QRious for QR Code Generation -->
     <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Your Firebase Configuration (PASTE YOURS HERE)
+        const firebaseConfig = {
+            apiKey: "AIzaSyC8SabTNDL2ow1c98hcM_7KpxpC3N4M7nk",
+            authDomain: "yummhealthybites.firebaseapp.com",
+            projectId: "yummhealthybites",
+            storageBucket: "yummhealthybites.firebasestorage.app",
+            messagingSenderId: "35103379148",
+            appId: "1:35103379148:web:b4ac3e23f3ce21655cfc69",
+            measurementId: "G-CJGZ4DK4NW"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Make db and other necessary Firestore functions globally accessible
+        window.db = db;
+        window.firebaseCollection = collection; // Make collection globally available
+        window.firebaseGetDocs = getDocs;       // Make getDocs globally available
+        window.firebaseAddDoc = addDoc;         // Make addDoc globally available
+        window.productsFromFirestore = []; // Global array to store fetched products
+    </script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -91,14 +118,15 @@
     <div class="min-h-screen flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8">
         <!-- Header Section -->
         <header class="text-center mb-12">
-            <h1 class="text-5xl font-extrabold text-d2691e mb-4">Sweet Delights Bakery</h1>
+            <h1 class="text-5xl font-extrabold text-d2691e mb-4">Yumm Healthy Bites</h1>
             <p class="text-xl text-gray-600">Indulge your cravings without the guilt. Our baked goods are crafted with whole grains and jaggery.</p>
         </header>
 
         <!-- Menu Section -->
         <section id="menu" class="container w-full bg-white rounded-xl shadow-lg p-8 mb-12">
             <h2 class="text-3xl font-bold section-title text-center mb-8">Our Delicious Menu</h2>
-            <div id="product-list" class="flex flex-col gap-10">
+            <div id="loading-menu" class="text-center text-gray-500 text-lg">Loading menu...</div>
+            <div id="product-list" class="flex flex-col gap-10 hidden">
                 <!-- Product categories and cards will be dynamically loaded here -->
             </div>
         </section>
@@ -192,106 +220,18 @@
     </div>
 
 
-    <script>
-        // Array of products with their details, updated based on your menu images
-        const products = [
-            // Cakes (from Menu.jpg)
-            { id: 'vanilla-cake', name: 'Vanilla Cake', description: 'Plain with toppings.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Vanilla', category: 'Cakes', options: [
-                { optionId: '250g', label: '250g', price: 179 },
-                { optionId: '500g', label: '500g', price: 349 }
-            ]},
-            { id: 'double-chocolate-cake', name: 'Double Chocolate Cake', description: 'Best Seller cake.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Double+Choco', category: 'Cakes', options: [
-                { optionId: '250g', label: '250g', price: 220 },
-                { optionId: '500g', label: '500g', price: 399 }
-            ]},
-            { id: 'marble-cake', name: 'Marble Cake', description: 'A classic marble delight.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Marble', category: 'Cakes', options: [
-                { optionId: '250g', label: '250g', price: 239 },
-                { optionId: '500g', label: '500g', price: 449 }
-            ]},
-            { id: 'banana-double-chocolate', name: 'Banana Double Chocolate Cake', description: 'Rich banana and chocolate fusion.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Banana+Choco', category: 'Cakes', options: [
-                { optionId: '250g', label: '250g', price: 249 },
-                { optionId: '500g', label: '500g', price: 489 }
-            ]},
-            { id: 'banana-walnut-double-chocolate', name: 'Banana Walnut Double Chocolate Cake', description: 'Premium blend of banana, walnut, and chocolate.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Banana+Walnut', category: 'Cakes', options: [
-                { optionId: '250g', label: '250g', price: 299 },
-                { optionId: '500g', label: '500g', price: 589 }
-            ]},
-            { id: 'upside-down-baklava', name: 'Upside down Baklava Cake', description: 'Premium unique baklava flavored cake.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Baklava', category: 'Cakes', options: [
-                { optionId: '250g', label: '250g', price: 299 },
-                { optionId: '500g', label: '500g', price: 589 }
-            ]},
-            { id: 'lemon-cake', name: 'Lemon Cake', description: 'Zesty and refreshing lemon cake.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Lemon', category: 'Cakes', options: [
-                { optionId: '250g', label: '250g', price: 249 },
-                { optionId: '500g', label: '500g', price: 489 }
-            ]},
-            { id: 'tooty-frooty-cake', name: 'Tooty Frooty Cake', description: 'A fun and fruity cake.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Tooty+Frooty', category: 'Cakes', options: [
-                { optionId: '250g', label: '250g', price: 199 },
-                { optionId: '500g', label: '500g', price: 379 }
-            ]},
-            { id: 'occasion-special-double-chocolate-cake', name: 'Occasion Special Double Chocolate', description: 'With chocolate ganache, perfect for special days.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Occasion+Choco', category: 'Cakes', options: [
-                { optionId: '250g', label: '250g', price: 339 },
-                { optionId: '500g', label: '500g', price: 589 }
-            ]},
-            { id: 'upside-down-pineapple-cake', name: 'Upside down Pineapple Cake', description: 'Classic pineapple cake.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Pineapple', category: 'Cakes', options: [
-                { optionId: '250g', label: '250g', price: 249 },
-                { optionId: '500g', label: '500g', price: 489 }
-            ]},
-            { id: 'dates-dry-fruits-cake', name: 'Dates & Dry Fruits Cake', description: 'Wholesome cake with dates and dry fruits.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Dates', category: 'Cakes', options: [
-                { optionId: '250g', label: '250g', price: 299 },
-                { optionId: '500g', label: '500g', price: 589 }
-            ]},
-            { id: 'ragi-chocolate-gluten-free-cake', name: 'Ragi Chocolate Cake (Gluten Free)', description: 'Gluten-free and rich in chocolate.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Ragi+Choco', category: 'Cakes', options: [
-                { optionId: '250g', label: '250g', price: 299 },
-                { optionId: '500g', label: '500g', price: 589 }
-            ]},
-            { id: 'orange-cake', name: 'Orange Cake', description: 'Seasonal and refreshing orange flavor.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Orange', category: 'Cakes', options: [
-                { optionId: '250g', label: '250g', price: 249 },
-                { optionId: '500g', label: '500g', price: 489 }
-            ]},
-            { id: 'rich-plum-cake', name: 'Rich Plum Cake', description: 'Seasonal, non-alcoholic rich plum cake.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Plum+Cake', category: 'Cakes', options: [
-                { optionId: '250g', label: '250g', price: 299 },
-                { optionId: '500g', label: '500g', price: 589 }
-            ]},
-
-            // Cookies (from Menu2.jpg) - All are 250g (12-15 Pcs) based on image note
-            { id: 'digestive-cookies', name: 'Digestive Cookies', description: 'Healthy and crunchy digestive cookies. (250g - 12-15 Pcs)', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Digestive+Cookies', category: 'Cookies', options: [{ optionId: '250g', label: '250g', price: 199 }]},
-            { id: 'jeera-ajmani-bites', name: 'Jeera Ajmani Bites', description: 'Savory cumin-flavored bites. (250g - 12-15 Pcs)', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Jeera+Bites', category: 'Cookies', options: [{ optionId: '250g', label: '250g', price: 229 }]},
-            { id: 'coconut-cookies', name: 'Coconut Cookies', description: 'Sweet and flaky coconut cookies. (250g - 12-15 Pcs)', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Coconut+Cookies', category: 'Cookies', options: [{ optionId: '250g', label: '250g', price: 249 }]},
-            { id: 'aata-naan-khatai', name: 'Aata Naan Khatai', description: 'Traditional Indian shortbread cookies. (250g - 12-15 Pcs)', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Naan+Khatai', category: 'Cookies', options: [{ optionId: '250g', label: '250g', price: 249 }]},
-            { id: 'oats-choco-chips-cookies', name: 'Oats Choco Chips Cookies', description: 'Healthy oats with delicious chocolate chips. (250g - 12-15 Pcs)', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Oats+Choco', category: 'Cookies', options: [{ optionId: '250g', label: '250g', price: 249 }]},
-            { id: 'double-chocolate-cookies', name: 'Double Chocolate Cookies', description: 'Double the chocolate, double the delight. (250g - 12-15 Pcs)', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Double+Choco+Cookies', category: 'Cookies', options: [{ optionId: '250g', label: '250g', price: 249 }]},
-            { id: 'oats-double-chocolate-cookies', name: 'Oats Double Chocolate Cookies', description: 'Nutritious oats with rich double chocolate. (250g - 12-15 Pcs)', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Oats+Double+Choco', category: 'Cookies', options: [{ optionId: '250g', label: '250g', price: 259 }]},
-            { id: 'cherry-charmer-cookies', name: 'Cherry Charmer Cookies', description: 'Charming cookies with a hint of cherry. (250g - 12-15 Pcs)', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Cherry+Cookies', category: 'Cookies', options: [{ optionId: '250g', label: '250g', price: 269 }]},
-            { id: 'biscoff-cookies', name: 'Biscoff Cookies', description: 'Caramelized biscoff flavored cookies. (250g - 12-15 Pcs)', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Biscoff+Cookies', category: 'Cookies', options: [{ optionId: '250g', label: '250g', price: 269 }]},
-            { id: 'ragi-chocolate-cookies', name: 'Ragi Chocolate Cookies', description: 'Healthy ragi cookies with chocolate goodness. (250g - 12-15 Pcs)', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Ragi+Choco+Cookies', category: 'Cookies', options: [{ optionId: '250g', label: '250g', price: 269 }]},
-
-            // Cupcakes (from Menu2.jpg)
-            { id: 'tea-cupcake-chocolate', name: 'Tea Cupcake (Chocolate)', description: 'Perfect chocolate cupcake for tea time.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Choco+Cupcake', category: 'Cupcakes', options: [{ optionId: '1pc', label: '1 Pc', price: 59 }]},
-            { id: 'plum-cupcake', name: 'Plum Cupcake', description: 'Moist plum flavored cupcake.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Plum+Cupcake', category: 'Cupcakes', options: [{ optionId: '1pc', label: '1 Pc', price: 69 }]},
-            { id: 'tea-cupcake-vanilla', name: 'Tea Cupcake (Vanilla)', description: 'Classic vanilla cupcake for tea time.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Vanilla+Cupcake', category: 'Cupcakes', options: [{ optionId: '1pc', label: '1 Pc', price: 49 }]},
-
-            // Others (from Menu2.jpg)
-            { id: 'chocolate-donuts', name: 'Chocolate Donuts', description: 'Delicious chocolate coated donut.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Donut', category: 'Others', options: [
-                { optionId: '1pc', label: '1 Pc', price: 79 },
-                { optionId: '2pcs', label: '2 Pcs', price: 149 }
-            ]},
-            { id: 'brownie', name: 'Brownie', description: 'Fudgy and rich brownie.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Brownie', category: 'Others', options: [
-                { optionId: '1pc', label: '1 Pc', price: 99 },
-                { optionId: '2pcs', label: '2 Pcs', price: 189 }
-            ]},
-            { id: 'brownie-chocolate-sauce', name: 'Brownie (with chocolate sauce)', description: 'Fudgy brownie with a generous drizzle of chocolate sauce.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Brownie+Sauce', category: 'Others', options: [
-                { optionId: '1pc', label: '1 Pc', price: 119 },
-                { optionId: '2pcs', label: '2 Pcs', price: 229 }
-            ]},
-            { id: 'choco-lava-cake', name: 'Choco Lava Cake', description: 'Warm and gooey chocolate lava cake.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Lava+Cake', category: 'Others', options: [
-                { optionId: '1pc', label: '1 Pc', price: 99 },
-                { optionId: '2pcs', label: '2 Pcs', price: 189 }
-            ]}
-        ];
+    <script type="module">
+        // Access Firebase functions globally after they are initialized in the first script block
+        const db = window.db;
+        const collection = window.firebaseCollection;
+        const getDocs = window.firebaseGetDocs;
+        const addDoc = window.firebaseAddDoc;
 
         let cart = {}; // Stores product ID and selected option ID and quantity: {'productId_optionId': quantity}
+        let productsFromFirestore = []; // Will store products fetched from Firestore
 
         const productListDiv = document.getElementById('product-list');
+        const loadingMenuDiv = document.getElementById('loading-menu');
         const orderSummaryItemsDiv = document.getElementById('order-summary-items');
         const orderTotalSpan = document.getElementById('order-total');
         const orderForm = document.getElementById('order-form');
@@ -299,7 +239,7 @@
         const orderDetailsOutput = document.getElementById('order-details-output');
         const copyOrderBtn = document.getElementById('copy-order-btn');
         const closeModalBtn = document.getElementById('close-modal-btn');
-        const topCloseModalBtn = document.getElementById('top-close-modal-btn'); // New reference for the top close button
+        const topCloseModalBtn = document.getElementById('top-close-modal-btn');
         const emptyCartMessage = document.getElementById('empty-cart-message');
         const upiQrCodeCanvas = document.getElementById('upi-qr-code');
         const upiLinkBtn = document.getElementById('upi-link-btn');
@@ -312,6 +252,30 @@
 
 
         /**
+         * Fetches products from Firestore and then renders them.
+         */
+        async function fetchAndRenderProducts() {
+            loadingMenuDiv.classList.remove('hidden'); // Show loading message
+            productListDiv.classList.add('hidden'); // Hide product list
+            try {
+                const productsCol = collection(db, 'products'); // Use the globally accessible 'collection'
+                const productSnapshot = await getDocs(productsCol); // Use the globally accessible 'getDocs'
+                productsFromFirestore = productSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                // Filter for available products only
+                productsFromFirestore = productsFromFirestore.filter(product => product.isAvailable);
+
+                renderProducts(); // Render the fetched products
+                loadingMenuDiv.classList.add('hidden'); // Hide loading message
+                productListDiv.classList.remove('hidden'); // Show product list
+            } catch (error) {
+                console.error("Error fetching products:", error);
+                loadingMenuDiv.textContent = "Failed to load menu. Please try again later.";
+            }
+        }
+
+
+        /**
          * Renders all product cards on the menu, categorized and with options.
          */
         function renderProducts() {
@@ -319,7 +283,7 @@
             const categories = ['Cakes', 'Cookies', 'Cupcakes', 'Others'];
 
             categories.forEach(category => {
-                const categoryProducts = products.filter(p => p.category === category);
+                const categoryProducts = productsFromFirestore.filter(p => p.category === category);
                 if (categoryProducts.length > 0) {
                     const categorySection = document.createElement('div');
                     categorySection.className = 'w-full mb-8'; // Full width, bottom margin
@@ -407,7 +371,7 @@
                         optionId = selectedOptionElement.value;
                     } else {
                         // For products with only one option, get the default optionId
-                        optionId = products.find(p => p.id === productId).options[0].optionId;
+                        optionId = productsFromFirestore.find(p => p.id === productId).options[0].optionId;
                     }
                     updateCart(productId, optionId, quantity);
                 });
@@ -429,7 +393,7 @@
                         optionId = selectedOptionElement.value;
                     } else {
                         // For products with only one option, get the default optionId
-                        optionId = products.find(p => p.id === productId).options[0].optionId;
+                        optionId = productsFromFirestore.find(p => p.id === productId).options[0].optionId;
                     }
                     updateCart(productId, optionId, quantity);
                 });
@@ -447,7 +411,7 @@
                     const quantityInput = document.querySelector(`.quantity-input[data-product-id="${productId}"]`);
 
                     // Find the product to get its options
-                    const product = products.find(p => p.id === productId);
+                    const product = productsFromFirestore.find(p => p.id === productId);
                     if (product) {
                         // Clear out quantities for all *other* options of this specific product in the cart
                         product.options.forEach(option => {
@@ -489,7 +453,7 @@
          * @returns {number} The price of the product option.
          */
         function getPrice(productId, optionId) {
-            const product = products.find(p => p.id === productId);
+            const product = productsFromFirestore.find(p => p.id === productId);
             if (product) {
                 const option = product.options.find(o => o.optionId === optionId);
                 if (option) {
@@ -509,7 +473,7 @@
 
             for (const key in cart) {
                 const [productId, optionId] = key.split('_');
-                const product = products.find(p => p.id === productId);
+                const product = productsFromFirestore.find(p => p.id === productId);
 
                 if (product) {
                     hasItemsInCart = true;
@@ -541,9 +505,9 @@
         }
 
         /**
-         * Handles the order form submission and generates order details text.
+         * Handles the order form submission and saves order to Firestore.
          */
-        orderForm.addEventListener('submit', (event) => {
+        orderForm.addEventListener('submit', async (event) => {
             event.preventDefault(); // Prevent default form submission
 
             if (Object.keys(cart).length === 0) {
@@ -564,65 +528,110 @@
             const customerEmail = document.getElementById('customerEmail').value;
             const specialInstructions = document.getElementById('specialInstructions').value;
 
-            let orderDetails = `--- Yumm Healthy Bites Order ---\n\n`;
-            orderDetails += `Customer Name: ${customerName}\n`;
-            orderDetails += `Phone Number: ${customerPhone}\n`;
+            let orderedItems = [];
+            let total = 0;
+            let orderDetailsText = `--- Yumm Healthy Bites Order ---\n\n`;
+            orderDetailsText += `Customer Name: ${customerName}\n`;
+            orderDetailsText += `Phone Number: ${customerPhone}\n`;
             if (customerEmail) {
-                orderDetails += `Email: ${customerEmail}\n`;
+                orderDetailsText += `Email: ${customerEmail}\n`;
             }
             if (specialInstructions) {
-                orderDetails += `Special Instructions: ${specialInstructions}\n`;
+                orderDetailsText += `Special Instructions: ${specialInstructions}\n`;
             }
-            orderDetails += `\n--- Order Items ---\n`;
+            orderDetailsText += `\n--- Order Items ---\n`;
 
-            let total = 0;
+
             for (const key in cart) {
                 const [productId, optionId] = key.split('_');
-                const product = products.find(p => p.id === productId);
+                const product = productsFromFirestore.find(p => p.id === productId);
                 if (product) {
                     const quantity = cart[key];
                     const option = product.options.find(o => o.optionId === optionId);
                     if (option) {
                         const itemTotal = option.price * quantity;
                         total += itemTotal;
-                        orderDetails += `${product.name} (${option.label}) (x${quantity}) - ₹${itemTotal.toFixed(2)}\n`;
+                        orderedItems.push({
+                            productId: productId,
+                            productName: product.name,
+                            optionId: optionId,
+                            optionLabel: option.label,
+                            pricePerUnit: option.price,
+                            quantity: quantity,
+                            itemTotal: itemTotal
+                        });
+                        orderDetailsText += `${product.name} (${option.label}) (x${quantity}) - ₹${itemTotal.toFixed(2)}\n`;
                     }
                 }
             }
-            orderDetails += `\nTotal Amount: ₹${total.toFixed(2)}\n\n`;
-            orderDetails += `Please copy this summary and send it to us via WhatsApp, email, or your preferred method.`;
-
-            orderDetailsOutput.value = orderDetails;
-
-            // Generate UPI Link and QR Code
-            const transactionId = 'ORDER' + Date.now(); // Simple unique ID for now
-            const transactionNote = encodeURIComponent(`Yumm Healthy Bites Order #${transactionId}`);
-            const upiLink = `upi://pay?pa=${YOUR_UPI_VPA}&pn=${encodeURIComponent(YOUR_PAYEE_NAME)}&am=${total.toFixed(2)}&cu=INR&tn=${transactionNote}&tr=${transactionId}`;
-
-            upiLinkBtn.href = upiLink; // Set the direct UPI link
-
-            // Generate QR code using QRious
-            new QRious({
-                element: upiQrCodeCanvas,
-                value: upiLink,
-                size: 200,
-                padding: 10,
-                background: '#fffaf0',
-                foreground: '#d2691e',
-            });
+            orderDetailsText += `\nTotal Amount: ₹${total.toFixed(2)}\n\n`;
+            orderDetailsText += `Please copy this summary and send it to us via WhatsApp, email, or your preferred method.`;
 
 
-            orderModal.classList.remove('hidden');
-            setTimeout(() => { // Animate modal in
-                orderModal.querySelector('.modal-content').classList.remove('scale-95', 'opacity-0');
-                orderModal.querySelector('.modal-content').classList.add('scale-100', 'opacity-100');
-            }, 50); // Small delay to allow CSS transition
+            // Prepare order object for Firestore
+            const newOrder = {
+                customerName: customerName,
+                customerPhone: customerPhone,
+                customerEmail: customerEmail,
+                specialInstructions: specialInstructions,
+                items: orderedItems,
+                totalAmount: total,
+                orderDate: new Date(), // Timestamp
+                status: 'New' // Initial status
+            };
 
-            // Reset the form and cart after order is placed
-            orderForm.reset();
-            cart = {};
-            renderProducts(); // Re-render products to reset quantities to 0
-            renderOrderSummary(); // Clear order summary
+            try {
+                // Add the order to Firestore
+                const docRef = await addDoc(collection(db, "orders"), newOrder); // Use the globally accessible 'addDoc' and 'collection'
+                console.log("Order written with ID: ", docRef.id);
+
+                orderDetailsText += `\nYour Order ID: ${docRef.id}`; // Add order ID to summary for customer
+
+
+                orderDetailsOutput.value = orderDetailsText;
+
+                // Generate UPI Link and QR Code
+                const transactionId = docRef.id; // Use Firestore document ID as transaction ID
+                const transactionNote = encodeURIComponent(`Yumm Healthy Bites Order #${transactionId}`);
+                const upiLink = `upi://pay?pa=${YOUR_UPI_VPA}&pn=${encodeURIComponent(YOUR_PAYEE_NAME)}&am=${total.toFixed(2)}&cu=INR&tn=${transactionNote}&tr=${transactionId}`;
+
+                upiLinkBtn.href = upiLink; // Set the direct UPI link
+
+                // Generate QR code using QRious
+                new QRious({
+                    element: upiQrCodeCanvas,
+                    value: upiLink,
+                    size: 200,
+                    padding: 10,
+                    background: '#fffaf0',
+                    foreground: '#d2691e',
+                });
+
+                orderModal.classList.remove('hidden');
+                setTimeout(() => {
+                    orderModal.querySelector('.modal-content').classList.remove('scale-95', 'opacity-0');
+                    orderModal.querySelector('.modal-content').classList.add('scale-100', 'opacity-100');
+                }, 50);
+
+                // Reset the form and cart after order is placed
+                orderForm.reset();
+                cart = {};
+                renderProducts(); // Re-render products to reset quantities to 0
+                renderOrderSummary(); // Clear order summary
+
+            } catch (e) {
+                console.error("Error adding document: ", e);
+                const messageBox = document.createElement('div');
+                messageBox.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+                messageBox.innerHTML = `
+                    <div class="bg-white p-6 rounded-lg shadow-xl text-center">
+                        <p class="text-lg mb-4 text-red-600">There was an error placing your order. Please try again or contact us directly.</p>
+                        <p class="text-sm text-gray-500">${e.message}</p>
+                        <button class="btn-primary px-6 py-2 rounded-lg mt-4" onclick="this.parentNode.parentNode.remove()">OK</button>
+                    </div>
+                `;
+                document.body.appendChild(messageBox);
+            }
         });
 
         /**
@@ -640,26 +649,22 @@
         /**
          * Closes the order confirmation modal.
          */
-        closeModalBtn.addEventListener('click', () => {
+        function closeOrderModal() {
             orderModal.querySelector('.modal-content').classList.remove('scale-100', 'opacity-100');
             orderModal.querySelector('.modal-content').classList.add('scale-95', 'opacity-0');
             setTimeout(() => { // Hide modal after animation
                 orderModal.classList.add('hidden');
             }, 300);
-        });
+        }
 
-        // Event listener for the new top close button
-        topCloseModalBtn.addEventListener('click', () => {
-            orderModal.querySelector('.modal-content').classList.remove('scale-100', 'opacity-100');
-            orderModal.querySelector('.modal-content').classList.add('scale-95', 'opacity-0');
-            setTimeout(() => {
-                orderModal.classList.add('hidden');
-            }, 300);
-        });
+        // Event listeners for closing the modal
+        closeModalBtn.addEventListener('click', closeOrderModal);
+        topCloseModalBtn.addEventListener('click', closeOrderModal);
+
 
         // Initialize the page on load
         window.onload = () => {
-            renderProducts();
+            fetchAndRenderProducts(); // Fetch from Firestore instead of direct render
             renderOrderSummary();
         };
     </script>
