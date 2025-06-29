@@ -8,10 +8,17 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Font - Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- QRious for QR Code Generation -->
+    <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #fcf8f3; /* Light cream background */
+            /* Placeholder for background image. Replace 'URL_TO_YOUR_BACKGROUND_IMAGE' with your image file path. */
+            background-image: url('https://placehold.co/1920x1080/fcf8f3/d2691e?text=Your+Background+Image+Here');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed; /* Makes background static when scrolling */
+            background-color: #fcf8f3; /* Fallback color */
         }
         .container {
             max-width: 960px;
@@ -50,6 +57,34 @@
         .modal {
             background-color: rgba(0, 0, 0, 0.7);
         }
+        .modal-content {
+            transform: scale(0.95);
+            opacity: 0;
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+            position: relative; /* Added for absolute positioning of close button */
+        }
+        .modal-content.scale-100 {
+            transform: scale(1);
+            opacity: 1;
+        }
+        .modal-close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #a0522d;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .modal-close-btn:hover {
+            background-color: #f2d7b4;
+            color: #d2691e;
+        }
     </style>
 </head>
 <body class="text-gray-800">
@@ -57,14 +92,14 @@
         <!-- Header Section -->
         <header class="text-center mb-12">
             <h1 class="text-5xl font-extrabold text-d2691e mb-4">Sweet Delights Bakery</h1>
-            <p class="text-xl text-gray-600">Freshly Baked Goods for Every Occasion</p>
+            <p class="text-xl text-gray-600">Indulge your cravings without the guilt. Our baked goods are crafted with whole grains and jaggery.</p>
         </header>
 
         <!-- Menu Section -->
         <section id="menu" class="container w-full bg-white rounded-xl shadow-lg p-8 mb-12">
             <h2 class="text-3xl font-bold section-title text-center mb-8">Our Delicious Menu</h2>
-            <div id="product-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Product cards will be dynamically loaded here -->
+            <div id="product-list" class="flex flex-col gap-10">
+                <!-- Product categories and cards will be dynamically loaded here -->
             </div>
         </section>
 
@@ -88,16 +123,6 @@
                     <div>
                         <label for="customerEmail" class="block text-sm font-medium text-gray-700 mb-1 mt-4">Email Address (Optional)</label>
                         <input type="email" id="customerEmail" name="customerEmail"
-                               class="input-field w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-d2691e">
-                    </div>
-                    <div>
-                        <label for="deliveryDate" class="block text-sm font-medium text-gray-700 mb-1 mt-4">Preferred Delivery/Pickup Date</label>
-                        <input type="date" id="deliveryDate" name="deliveryDate" required
-                               class="input-field w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-d2691e">
-                    </div>
-                    <div>
-                        <label for="deliveryTime" class="block text-sm font-medium text-gray-700 mb-1 mt-4">Preferred Delivery/Pickup Time</label>
-                        <input type="time" id="deliveryTime" name="deliveryTime" required
                                class="input-field w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-d2691e">
                     </div>
                     <div>
@@ -130,42 +155,141 @@
             <div class="text-center space-y-4 text-gray-700">
                 <p>We are a small business passionate about baking fresh, delicious treats for you!</p>
                 <p>For custom orders or inquiries, please reach out to us:</p>
-                <p class="font-semibold">Phone: +91 98765 43210</p>
-                <p class="font-semibold">Email: info@sweetdelights.com</p>
+                <p class="font-semibold">Phone: +91 97675 19630</p>
+                <p class="font-semibold">Email: ruchiraagrawal@yummhealthy.com</p>
                 <p>Follow us on <a href="#" class="text-d2691e hover:underline font-semibold">Instagram</a> and <a href="#" class="text-d2691e hover:underline font-semibold">Facebook</a>!</p>
             </div>
         </section>
 
         <!-- Footer -->
         <footer class="mt-12 text-center text-gray-500 text-sm">
-            &copy; 2025 Sweet Delights Bakery. All rights reserved.
+            &copy; 2025 Yumm Healthy Bites. All rights reserved.
         </footer>
     </div>
 
     <!-- Order Confirmation Modal -->
     <div id="order-modal" class="modal fixed inset-0 flex items-center justify-center p-4 hidden">
-        <div class="modal-content bg-white p-8 rounded-lg shadow-xl max-w-lg w-full transform transition-all duration-300 ease-out scale-95 opacity-0">
+        <div class="modal-content bg-white p-8 rounded-lg shadow-xl max-w-lg w-full transform scale-95 opacity-0">
+            <button class="modal-close-btn" id="top-close-modal-btn">&times;</button> <!-- New close button -->
             <h2 class="text-3xl font-bold text-d2691e mb-6 text-center">Order Confirmation</h2>
-            <p class="text-gray-700 mb-4">Thank you for your order! Please copy the details below and send them to us via WhatsApp, email, or your preferred method to confirm your order.</p>
-            <textarea id="order-details-output" readonly rows="10" class="w-full p-4 border border-f2d7b4 rounded-lg bg-fffaf0 text-gray-800 text-sm mb-6"></textarea>
-            <button id="copy-order-btn" class="btn-primary w-full py-3 rounded-lg text-lg font-semibold shadow-md mb-4">Copy Order Details</button>
+            <p class="text-gray-700 mb-4 text-center">Thank you for your order! Please use the options below to confirm your order and make payment.</p>
+
+            <div class="mb-6 border-t border-b border-f2d7b4 py-4">
+                <h3 class="text-xl font-semibold mb-3 text-center text-d2691e">Your Order Details Summary</h3>
+                <textarea id="order-details-output" readonly rows="7" class="w-full p-4 border border-f2d7b4 rounded-lg bg-fffaf0 text-gray-800 text-sm mb-4"></textarea>
+                <button id="copy-order-btn" class="btn-primary w-full py-2 rounded-lg text-md font-semibold shadow-md mb-2">Copy Order Summary</button>
+            </div>
+
+            <div class="text-center mb-6">
+                <h3 class="text-xl font-semibold mb-3 text-d2691e">Pay with UPI</h3>
+                <p class="text-gray-700 mb-4">Scan the QR code or click the button below to pay via your preferred UPI app.</p>
+                <canvas id="upi-qr-code" class="w-48 h-48 mx-auto border border-f2d7b4 rounded-lg p-2"></canvas>
+                <a id="upi-link-btn" href="#" class="btn-primary w-full py-3 rounded-lg text-lg font-semibold shadow-md mt-4 block text-center" target="_blank" rel="noopener noreferrer">Open UPI App to Pay</a>
+            </div>
+
             <button id="close-modal-btn" class="w-full py-2 rounded-lg text-d2691e border border-d2691e hover:bg-d2691e hover:text-white transition-colors duration-200">Close</button>
         </div>
     </div>
 
 
     <script>
-        // Array of products with their details
+        // Array of products with their details, updated based on your menu images
         const products = [
-            { id: 'chocolate-chip-cookies', name: 'Chocolate Chip Cookies (12 pcs)', description: 'Classic cookies with rich chocolate chips.', price: 250, imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Cookies' },
-            { id: 'red-velvet-cupcakes', name: 'Red Velvet Cupcakes (6 pcs)', description: 'Moist red velvet with cream cheese frosting.', price: 350, imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Cupcakes' },
-            { id: 'lemon-blueberry-loaf', name: 'Lemon Blueberry Loaf', description: 'Tangy lemon and sweet blueberries in a delightful loaf cake.', price: 400, imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Loaf' },
-            { id: 'chocolate-fudge-cake', name: 'Chocolate Fudge Cake (1 kg)', description: 'Decadent chocolate cake with rich fudge frosting.', price: 800, imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Cake' },
-            { id: 'assorted-brownies', name: 'Assorted Brownies (6 pcs)', description: 'A mix of classic, walnut, and fudge brownies.', price: 300, imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Brownies' },
-            { id: 'apple-pie-mini', name: 'Mini Apple Pie', description: 'Individual apple pies with a flaky crust and spiced apple filling.', price: 180, imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Pie' }
+            // Cakes (from Menu.jpg)
+            { id: 'vanilla-cake', name: 'Vanilla Cake', description: 'Plain with toppings.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Vanilla', category: 'Cakes', options: [
+                { optionId: '250g', label: '250g', price: 179 },
+                { optionId: '500g', label: '500g', price: 349 }
+            ]},
+            { id: 'double-chocolate-cake', name: 'Double Chocolate Cake', description: 'Best Seller cake.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Double+Choco', category: 'Cakes', options: [
+                { optionId: '250g', label: '250g', price: 220 },
+                { optionId: '500g', label: '500g', price: 399 }
+            ]},
+            { id: 'marble-cake', name: 'Marble Cake', description: 'A classic marble delight.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Marble', category: 'Cakes', options: [
+                { optionId: '250g', label: '250g', price: 239 },
+                { optionId: '500g', label: '500g', price: 449 }
+            ]},
+            { id: 'banana-double-chocolate', name: 'Banana Double Chocolate Cake', description: 'Rich banana and chocolate fusion.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Banana+Choco', category: 'Cakes', options: [
+                { optionId: '250g', label: '250g', price: 249 },
+                { optionId: '500g', label: '500g', price: 489 }
+            ]},
+            { id: 'banana-walnut-double-chocolate', name: 'Banana Walnut Double Chocolate Cake', description: 'Premium blend of banana, walnut, and chocolate.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Banana+Walnut', category: 'Cakes', options: [
+                { optionId: '250g', label: '250g', price: 299 },
+                { optionId: '500g', label: '500g', price: 589 }
+            ]},
+            { id: 'upside-down-baklava', name: 'Upside down Baklava Cake', description: 'Premium unique baklava flavored cake.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Baklava', category: 'Cakes', options: [
+                { optionId: '250g', label: '250g', price: 299 },
+                { optionId: '500g', label: '500g', price: 589 }
+            ]},
+            { id: 'lemon-cake', name: 'Lemon Cake', description: 'Zesty and refreshing lemon cake.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Lemon', category: 'Cakes', options: [
+                { optionId: '250g', label: '250g', price: 249 },
+                { optionId: '500g', label: '500g', price: 489 }
+            ]},
+            { id: 'tooty-frooty-cake', name: 'Tooty Frooty Cake', description: 'A fun and fruity cake.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Tooty+Frooty', category: 'Cakes', options: [
+                { optionId: '250g', label: '250g', price: 199 },
+                { optionId: '500g', label: '500g', price: 379 }
+            ]},
+            { id: 'occasion-special-double-chocolate-cake', name: 'Occasion Special Double Chocolate', description: 'With chocolate ganache, perfect for special days.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Occasion+Choco', category: 'Cakes', options: [
+                { optionId: '250g', label: '250g', price: 339 },
+                { optionId: '500g', label: '500g', price: 589 }
+            ]},
+            { id: 'upside-down-pineapple-cake', name: 'Upside down Pineapple Cake', description: 'Classic pineapple cake.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Pineapple', category: 'Cakes', options: [
+                { optionId: '250g', label: '250g', price: 249 },
+                { optionId: '500g', label: '500g', price: 489 }
+            ]},
+            { id: 'dates-dry-fruits-cake', name: 'Dates & Dry Fruits Cake', description: 'Wholesome cake with dates and dry fruits.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Dates', category: 'Cakes', options: [
+                { optionId: '250g', label: '250g', price: 299 },
+                { optionId: '500g', label: '500g', price: 589 }
+            ]},
+            { id: 'ragi-chocolate-gluten-free-cake', name: 'Ragi Chocolate Cake (Gluten Free)', description: 'Gluten-free and rich in chocolate.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Ragi+Choco', category: 'Cakes', options: [
+                { optionId: '250g', label: '250g', price: 299 },
+                { optionId: '500g', label: '500g', price: 589 }
+            ]},
+            { id: 'orange-cake', name: 'Orange Cake', description: 'Seasonal and refreshing orange flavor.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Orange', category: 'Cakes', options: [
+                { optionId: '250g', label: '250g', price: 249 },
+                { optionId: '500g', label: '500g', price: 489 }
+            ]},
+            { id: 'rich-plum-cake', name: 'Rich Plum Cake', description: 'Seasonal, non-alcoholic rich plum cake.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Plum+Cake', category: 'Cakes', options: [
+                { optionId: '250g', label: '250g', price: 299 },
+                { optionId: '500g', label: '500g', price: 589 }
+            ]},
+
+            // Cookies (from Menu2.jpg) - All are 250g (12-15 Pcs) based on image note
+            { id: 'digestive-cookies', name: 'Digestive Cookies', description: 'Healthy and crunchy digestive cookies. (250g - 12-15 Pcs)', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Digestive+Cookies', category: 'Cookies', options: [{ optionId: '250g', label: '250g', price: 199 }]},
+            { id: 'jeera-ajmani-bites', name: 'Jeera Ajmani Bites', description: 'Savory cumin-flavored bites. (250g - 12-15 Pcs)', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Jeera+Bites', category: 'Cookies', options: [{ optionId: '250g', label: '250g', price: 229 }]},
+            { id: 'coconut-cookies', name: 'Coconut Cookies', description: 'Sweet and flaky coconut cookies. (250g - 12-15 Pcs)', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Coconut+Cookies', category: 'Cookies', options: [{ optionId: '250g', label: '250g', price: 249 }]},
+            { id: 'aata-naan-khatai', name: 'Aata Naan Khatai', description: 'Traditional Indian shortbread cookies. (250g - 12-15 Pcs)', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Naan+Khatai', category: 'Cookies', options: [{ optionId: '250g', label: '250g', price: 249 }]},
+            { id: 'oats-choco-chips-cookies', name: 'Oats Choco Chips Cookies', description: 'Healthy oats with delicious chocolate chips. (250g - 12-15 Pcs)', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Oats+Choco', category: 'Cookies', options: [{ optionId: '250g', label: '250g', price: 249 }]},
+            { id: 'double-chocolate-cookies', name: 'Double Chocolate Cookies', description: 'Double the chocolate, double the delight. (250g - 12-15 Pcs)', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Double+Choco+Cookies', category: 'Cookies', options: [{ optionId: '250g', label: '250g', price: 249 }]},
+            { id: 'oats-double-chocolate-cookies', name: 'Oats Double Chocolate Cookies', description: 'Nutritious oats with rich double chocolate. (250g - 12-15 Pcs)', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Oats+Double+Choco', category: 'Cookies', options: [{ optionId: '250g', label: '250g', price: 259 }]},
+            { id: 'cherry-charmer-cookies', name: 'Cherry Charmer Cookies', description: 'Charming cookies with a hint of cherry. (250g - 12-15 Pcs)', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Cherry+Cookies', category: 'Cookies', options: [{ optionId: '250g', label: '250g', price: 269 }]},
+            { id: 'biscoff-cookies', name: 'Biscoff Cookies', description: 'Caramelized biscoff flavored cookies. (250g - 12-15 Pcs)', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Biscoff+Cookies', category: 'Cookies', options: [{ optionId: '250g', label: '250g', price: 269 }]},
+            { id: 'ragi-chocolate-cookies', name: 'Ragi Chocolate Cookies', description: 'Healthy ragi cookies with chocolate goodness. (250g - 12-15 Pcs)', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Ragi+Choco+Cookies', category: 'Cookies', options: [{ optionId: '250g', label: '250g', price: 269 }]},
+
+            // Cupcakes (from Menu2.jpg)
+            { id: 'tea-cupcake-chocolate', name: 'Tea Cupcake (Chocolate)', description: 'Perfect chocolate cupcake for tea time.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Choco+Cupcake', category: 'Cupcakes', options: [{ optionId: '1pc', label: '1 Pc', price: 59 }]},
+            { id: 'plum-cupcake', name: 'Plum Cupcake', description: 'Moist plum flavored cupcake.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Plum+Cupcake', category: 'Cupcakes', options: [{ optionId: '1pc', label: '1 Pc', price: 69 }]},
+            { id: 'tea-cupcake-vanilla', name: 'Tea Cupcake (Vanilla)', description: 'Classic vanilla cupcake for tea time.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Vanilla+Cupcake', category: 'Cupcakes', options: [{ optionId: '1pc', label: '1 Pc', price: 49 }]},
+
+            // Others (from Menu2.jpg)
+            { id: 'chocolate-donuts', name: 'Chocolate Donuts', description: 'Delicious chocolate coated donut.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Donut', category: 'Others', options: [
+                { optionId: '1pc', label: '1 Pc', price: 79 },
+                { optionId: '2pcs', label: '2 Pcs', price: 149 }
+            ]},
+            { id: 'brownie', name: 'Brownie', description: 'Fudgy and rich brownie.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Brownie', category: 'Others', options: [
+                { optionId: '1pc', label: '1 Pc', price: 99 },
+                { optionId: '2pcs', label: '2 Pcs', price: 189 }
+            ]},
+            { id: 'brownie-chocolate-sauce', name: 'Brownie (with chocolate sauce)', description: 'Fudgy brownie with a generous drizzle of chocolate sauce.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Brownie+Sauce', category: 'Others', options: [
+                { optionId: '1pc', label: '1 Pc', price: 119 },
+                { optionId: '2pcs', label: '2 Pcs', price: 229 }
+            ]},
+            { id: 'choco-lava-cake', name: 'Choco Lava Cake', description: 'Warm and gooey chocolate lava cake.', imageUrl: 'https://placehold.co/400x300/f2d7b4/d2691e?text=Lava+Cake', category: 'Others', options: [
+                { optionId: '1pc', label: '1 Pc', price: 99 },
+                { optionId: '2pcs', label: '2 Pcs', price: 189 }
+            ]}
         ];
 
-        let cart = {}; // Stores product ID and quantity
+        let cart = {}; // Stores product ID and selected option ID and quantity: {'productId_optionId': quantity}
 
         const productListDiv = document.getElementById('product-list');
         const orderSummaryItemsDiv = document.getElementById('order-summary-items');
@@ -175,30 +299,87 @@
         const orderDetailsOutput = document.getElementById('order-details-output');
         const copyOrderBtn = document.getElementById('copy-order-btn');
         const closeModalBtn = document.getElementById('close-modal-btn');
+        const topCloseModalBtn = document.getElementById('top-close-modal-btn'); // New reference for the top close button
         const emptyCartMessage = document.getElementById('empty-cart-message');
+        const upiQrCodeCanvas = document.getElementById('upi-qr-code');
+        const upiLinkBtn = document.getElementById('upi-link-btn');
+
+        // --- Configuration for UPI Payment ---
+        // REPLACE WITH YOUR ACTUAL UPI VPA AND PAYEE NAME
+        const YOUR_UPI_VPA = 'yourvpa@bank'; // Example: mobile number@upi or yourname@bank
+        const YOUR_PAYEE_NAME = 'Yumm Healthy Bites'; // Your business name
+        // --- End Configuration ---
+
 
         /**
-         * Renders all product cards on the menu.
+         * Renders all product cards on the menu, categorized and with options.
          */
         function renderProducts() {
             productListDiv.innerHTML = ''; // Clear existing products
-            products.forEach(product => {
-                const productCard = document.createElement('div');
-                productCard.className = 'product-card rounded-lg p-6 flex flex-col items-center text-center';
-                productCard.innerHTML = `
-                    <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-40 object-cover rounded-md mb-4 onerror="this.onerror=null;this.src='https://placehold.co/400x300/f2d7b4/d2691e?text=Image+Error';">
-                    <h3 class="text-xl font-semibold mb-2 text-d2691e">${product.name}</h3>
-                    <p class="text-gray-600 mb-3">${product.description}</p>
-                    <p class="text-2xl font-bold text-gray-800 mb-4">₹${product.price.toFixed(2)}</p>
-                    <div class="flex items-center space-x-2 mt-auto">
-                        <button class="quantity-btn bg-gray-200 text-gray-700 px-3 py-1 rounded-full hover:bg-gray-300 transition-colors" data-id="${product.id}" data-action="decrease">-</button>
-                        <input type="number" class="quantity-input w-16 text-center input-field rounded-lg" value="${cart[product.id] || 0}" min="0" data-id="${product.id}">
-                        <button class="quantity-btn bg-gray-200 text-gray-700 px-3 py-1 rounded-full hover:bg-gray-300 transition-colors" data-id="${product.id}" data-action="increase">+</button>
-                    </div>
-                `;
-                productListDiv.appendChild(productCard);
+            const categories = ['Cakes', 'Cookies', 'Cupcakes', 'Others'];
+
+            categories.forEach(category => {
+                const categoryProducts = products.filter(p => p.category === category);
+                if (categoryProducts.length > 0) {
+                    const categorySection = document.createElement('div');
+                    categorySection.className = 'w-full mb-8'; // Full width, bottom margin
+                    categorySection.innerHTML = `<h3 class="text-2xl font-bold text-d2691e mb-6 border-b-2 border-f2d7b4 pb-2">${category}</h3>`;
+                    const productsGrid = document.createElement('div');
+                    productsGrid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8';
+
+                    categoryProducts.forEach(product => {
+                        const productCard = document.createElement('div');
+                        productCard.className = 'product-card rounded-lg p-6 flex flex-col items-center text-center';
+
+                        let optionsHtml = '';
+                        let initialQuantity = 0;
+                        let selectedOptionIdForDisplay = product.options[0].optionId; // Default to the first option for display
+
+                        // Find if this product (with any of its options) is in the cart
+                        const cartEntryKeysForProduct = Object.keys(cart).filter(key => key.startsWith(`${product.id}_`));
+
+                        if (cartEntryKeysForProduct.length > 0) {
+                            // If yes, use the quantity and option from the first matching cart entry for initial display
+                            const firstCartKey = cartEntryKeysForProduct[0];
+                            const [, optionIdInCart] = firstCartKey.split('_');
+                            selectedOptionIdForDisplay = optionIdInCart;
+                            initialQuantity = cart[firstCartKey];
+                        }
+
+                        if (product.options.length > 1) {
+                            optionsHtml = `<select class="product-option-select input-field w-full px-3 py-1 rounded-lg mb-3" data-product-id="${product.id}">`;
+                            product.options.forEach(option => {
+                                const isSelected = (option.optionId === selectedOptionIdForDisplay) ? 'selected' : '';
+                                optionsHtml += `<option value="${option.optionId}" data-price="${option.price}" ${isSelected}>
+                                                    ${option.label} - ₹${option.price.toFixed(2)}
+                                                </option>`;
+                            });
+                            optionsHtml += `</select>`;
+                        } else {
+                            // If only one option, display its price directly
+                            optionsHtml = `<p class="text-2xl font-bold text-gray-800 mb-4">₹${product.options[0].price.toFixed(2)}</p>`;
+                        }
+
+                        productCard.innerHTML = `
+                            <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-40 object-cover rounded-md mb-4" onerror="this.onerror=null;this.src='https://placehold.co/400x300/f2d7b4/d2691e?text=Image+Error';">
+                            <h3 class="text-xl font-semibold mb-2 text-d2691e">${product.name}</h3>
+                            <p class="text-gray-600 mb-3">${product.description}</p>
+                            ${optionsHtml}
+                            <div class="flex items-center space-x-2 mt-auto">
+                                <button class="quantity-btn bg-gray-200 text-gray-700 px-3 py-1 rounded-full hover:bg-gray-300 transition-colors" data-product-id="${product.id}" data-action="decrease">-</button>
+                                <input type="number" class="quantity-input w-16 text-center input-field rounded-lg" value="${initialQuantity}" min="0" data-product-id="${product.id}">
+                                <button class="quantity-btn bg-gray-200 text-gray-700 px-3 py-1 rounded-full hover:bg-gray-300 transition-colors" data-product-id="${product.id}" data-action="increase">+</button>
+                            </div>
+                        `;
+                        productsGrid.appendChild(productCard);
+                    });
+                    categorySection.appendChild(productsGrid);
+                    productListDiv.appendChild(categorySection);
+                }
             });
-            addQuantityEventListeners(); // Attach event listeners after rendering
+
+            addQuantityEventListeners();
+            addOptionChangeListeners();
         }
 
         /**
@@ -207,46 +388,115 @@
         function addQuantityEventListeners() {
             document.querySelectorAll('.quantity-btn').forEach(button => {
                 button.addEventListener('click', (event) => {
-                    const productId = event.target.dataset.id;
+                    const productId = event.target.dataset.productId;
                     const action = event.target.dataset.action;
-                    const input = document.querySelector(`.quantity-input[data-id="${productId}"]`);
-                    let quantity = parseInt(input.value);
+                    const quantityInput = document.querySelector(`.quantity-input[data-product-id="${productId}"]`);
+                    let quantity = parseInt(quantityInput.value);
 
                     if (action === 'increase') {
                         quantity++;
                     } else if (action === 'decrease' && quantity > 0) {
                         quantity--;
                     }
-                    input.value = quantity;
-                    updateCart(productId, quantity);
+                    quantityInput.value = quantity;
+                    
+                    // Determine the currently selected option ID for this product
+                    const selectedOptionElement = document.querySelector(`.product-option-select[data-product-id="${productId}"]`);
+                    let optionId;
+                    if (selectedOptionElement) {
+                        optionId = selectedOptionElement.value;
+                    } else {
+                        // For products with only one option, get the default optionId
+                        optionId = products.find(p => p.id === productId).options[0].optionId;
+                    }
+                    updateCart(productId, optionId, quantity);
                 });
             });
 
             document.querySelectorAll('.quantity-input').forEach(input => {
                 input.addEventListener('change', (event) => {
-                    const productId = event.target.dataset.id;
+                    const productId = event.target.dataset.productId;
                     let quantity = parseInt(event.target.value);
                     if (isNaN(quantity) || quantity < 0) {
-                        quantity = 0; // Default to 0 if invalid
+                        quantity = 0;
                         event.target.value = 0;
                     }
-                    updateCart(productId, quantity);
+                    
+                    // Determine the currently selected option ID for this product
+                    const selectedOptionElement = document.querySelector(`.product-option-select[data-product-id="${productId}"]`);
+                    let optionId;
+                    if (selectedOptionElement) {
+                        optionId = selectedOptionElement.value;
+                    } else {
+                        // For products with only one option, get the default optionId
+                        optionId = products.find(p => p.id === productId).options[0].optionId;
+                    }
+                    updateCart(productId, optionId, quantity);
                 });
             });
         }
 
         /**
-         * Updates the cart based on product quantity.
-         * @param {string} productId - The ID of the product.
-         * @param {number} quantity - The new quantity of the product.
+         * Attaches event listeners to product option select dropdowns.
          */
-        function updateCart(productId, quantity) {
+        function addOptionChangeListeners() {
+            document.querySelectorAll('.product-option-select').forEach(select => {
+                select.addEventListener('change', (event) => {
+                    const productId = event.target.dataset.productId;
+                    const newOptionId = event.target.value;
+                    const quantityInput = document.querySelector(`.quantity-input[data-product-id="${productId}"]`);
+
+                    // Find the product to get its options
+                    const product = products.find(p => p.id === productId);
+                    if (product) {
+                        // Clear out quantities for all *other* options of this specific product in the cart
+                        product.options.forEach(option => {
+                            const key = `${productId}_${option.optionId}`;
+                            if (cart[key] && option.optionId !== newOptionId) {
+                                delete cart[key];
+                            }
+                        });
+                    }
+
+                    // Update the cart with the new option and current quantity from input
+                    const currentQuantity = parseInt(quantityInput.value);
+                    updateCart(productId, newOptionId, currentQuantity);
+                });
+            });
+        }
+
+
+        /**
+         * Updates the cart based on product ID, selected option ID, and quantity.
+         * @param {string} productId - The ID of the product.
+         * @param {string} optionId - The ID of the selected option (e.g., '250g', '1pc').
+         * @param {number} quantity - The new quantity of the product for the given option.
+         */
+        function updateCart(productId, optionId, quantity) {
+            const key = `${productId}_${optionId}`;
             if (quantity > 0) {
-                cart[productId] = quantity;
+                cart[key] = quantity;
             } else {
-                delete cart[productId];
+                delete cart[key];
             }
             renderOrderSummary();
+        }
+
+        /**
+         * Gets the price for a specific product option.
+         * @param {string} productId - The ID of the product.
+         * @param {string} optionId - The ID of the selected option.
+         * @returns {number} The price of the product option.
+         */
+        function getPrice(productId, optionId) {
+            const product = products.find(p => p.id === productId);
+            if (product) {
+                const option = product.options.find(o => o.optionId === optionId);
+                if (option) {
+                    return option.price;
+                }
+            }
+            return 0; // Should not happen if product and option exist
         }
 
         /**
@@ -257,21 +507,27 @@
             let total = 0;
             let hasItemsInCart = false;
 
-            for (const productId in cart) {
+            for (const key in cart) {
+                const [productId, optionId] = key.split('_');
                 const product = products.find(p => p.id === productId);
+
                 if (product) {
                     hasItemsInCart = true;
-                    const quantity = cart[productId];
-                    const itemTotal = product.price * quantity;
-                    total += itemTotal;
+                    const quantity = cart[key];
+                    const option = product.options.find(o => o.optionId === optionId);
 
-                    const summaryItem = document.createElement('div');
-                    summaryItem.className = 'flex justify-between items-center py-2 border-b border-gray-200 last:border-b-0';
-                    summaryItem.innerHTML = `
-                        <span>${product.name} x ${quantity}</span>
-                        <span>₹${itemTotal.toFixed(2)}</span>
-                    `;
-                    orderSummaryItemsDiv.appendChild(summaryItem);
+                    if (option) {
+                        const itemTotal = option.price * quantity;
+                        total += itemTotal;
+
+                        const summaryItem = document.createElement('div');
+                        summaryItem.className = 'flex justify-between items-center py-2 border-b border-gray-200 last:border-b-0';
+                        summaryItem.innerHTML = `
+                            <span>${product.name} (${option.label}) x ${quantity}</span>
+                            <span>₹${itemTotal.toFixed(2)}</span>
+                        `;
+                        orderSummaryItemsDiv.appendChild(summaryItem);
+                    }
                 }
             }
 
@@ -285,51 +541,77 @@
         }
 
         /**
-         * Handles the order form submission.
-         * @param {Event} event - The form submission event.
+         * Handles the order form submission and generates order details text.
          */
         orderForm.addEventListener('submit', (event) => {
             event.preventDefault(); // Prevent default form submission
 
             if (Object.keys(cart).length === 0) {
-                alert('Your cart is empty! Please add some items to place an order.');
+                const messageBox = document.createElement('div');
+                messageBox.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+                messageBox.innerHTML = `
+                    <div class="bg-white p-6 rounded-lg shadow-xl text-center">
+                        <p class="text-lg mb-4">Your cart is empty! Please add some items to place an order.</p>
+                        <button class="btn-primary px-6 py-2 rounded-lg" onclick="this.parentNode.parentNode.remove()">OK</button>
+                    </div>
+                `;
+                document.body.appendChild(messageBox);
                 return;
             }
 
             const customerName = document.getElementById('customerName').value;
             const customerPhone = document.getElementById('customerPhone').value;
             const customerEmail = document.getElementById('customerEmail').value;
-            const deliveryDate = document.getElementById('deliveryDate').value;
-            const deliveryTime = document.getElementById('deliveryTime').value;
             const specialInstructions = document.getElementById('specialInstructions').value;
 
-            let orderDetails = `--- Sweet Delights Bakery Order ---\n\n`;
+            let orderDetails = `--- Yumm Healthy Bites Order ---\n\n`;
             orderDetails += `Customer Name: ${customerName}\n`;
             orderDetails += `Phone Number: ${customerPhone}\n`;
             if (customerEmail) {
                 orderDetails += `Email: ${customerEmail}\n`;
             }
-            orderDetails += `Preferred Date: ${deliveryDate}\n`;
-            orderDetails += `Preferred Time: ${deliveryTime}\n`;
             if (specialInstructions) {
                 orderDetails += `Special Instructions: ${specialInstructions}\n`;
             }
             orderDetails += `\n--- Order Items ---\n`;
 
             let total = 0;
-            for (const productId in cart) {
+            for (const key in cart) {
+                const [productId, optionId] = key.split('_');
                 const product = products.find(p => p.id === productId);
                 if (product) {
-                    const quantity = cart[productId];
-                    const itemTotal = product.price * quantity;
-                    orderDetails += `${product.name} (x${quantity}) - ₹${itemTotal.toFixed(2)}\n`;
-                    total += itemTotal;
+                    const quantity = cart[key];
+                    const option = product.options.find(o => o.optionId === optionId);
+                    if (option) {
+                        const itemTotal = option.price * quantity;
+                        total += itemTotal;
+                        orderDetails += `${product.name} (${option.label}) (x${quantity}) - ₹${itemTotal.toFixed(2)}\n`;
+                    }
                 }
             }
             orderDetails += `\nTotal Amount: ₹${total.toFixed(2)}\n\n`;
-            orderDetails += `Please send this message to us to confirm your order. We'll get back to you shortly!`;
+            orderDetails += `Please copy this summary and send it to us via WhatsApp, email, or your preferred method.`;
 
             orderDetailsOutput.value = orderDetails;
+
+            // Generate UPI Link and QR Code
+            const transactionId = 'ORDER' + Date.now(); // Simple unique ID for now
+            const transactionNote = encodeURIComponent(`Yumm Healthy Bites Order #${transactionId}`);
+            const upiLink = `upi://pay?pa=${YOUR_UPI_VPA}&pn=${encodeURIComponent(YOUR_PAYEE_NAME)}&am=${total.toFixed(2)}&cu=INR&tn=${transactionNote}&tr=${transactionId}`;
+
+            upiLinkBtn.href = upiLink; // Set the direct UPI link
+
+            // Generate QR code using QRious
+            new QRious({
+                element: upiQrCodeCanvas,
+                value: upiLink,
+                size: 200,
+                padding: 10,
+                background: '#fffaf0',
+                foreground: '#d2691e',
+            });
+
+
             orderModal.classList.remove('hidden');
             setTimeout(() => { // Animate modal in
                 orderModal.querySelector('.modal-content').classList.remove('scale-95', 'opacity-0');
@@ -351,7 +633,7 @@
             document.execCommand('copy');
             copyOrderBtn.textContent = 'Copied!';
             setTimeout(() => {
-                copyOrderBtn.textContent = 'Copy Order Details';
+                copyOrderBtn.textContent = 'Copy Order Summary';
             }, 2000);
         });
 
@@ -362,6 +644,15 @@
             orderModal.querySelector('.modal-content').classList.remove('scale-100', 'opacity-100');
             orderModal.querySelector('.modal-content').classList.add('scale-95', 'opacity-0');
             setTimeout(() => { // Hide modal after animation
+                orderModal.classList.add('hidden');
+            }, 300);
+        });
+
+        // Event listener for the new top close button
+        topCloseModalBtn.addEventListener('click', () => {
+            orderModal.querySelector('.modal-content').classList.remove('scale-100', 'opacity-100');
+            orderModal.querySelector('.modal-content').classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
                 orderModal.classList.add('hidden');
             }, 300);
         });
