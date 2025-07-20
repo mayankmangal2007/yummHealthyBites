@@ -148,71 +148,113 @@
     const cart = {};
 
     async function fetchMenu() {
-      const res = await fetch(sheetURL);
-      const data = await res.json();
+      try {
+        const res = await fetch(sheetURL);
+        const data = await res.json();
 
-      const grouped = {};
-      data.forEach(item => {
-        const category = item.Category || 'Others';
-        if (!grouped[category]) grouped[category] = [];
-        grouped[category].push(item);
-      });
-
-      for (const [category, items] of Object.entries(grouped)) {
-        const anchor = category.replace(/\s+/g, '-').toLowerCase();
-        const tabBtn = document.createElement('button');
-        tabBtn.className = 'bg-pink-200 hover:bg-pink-300 text-pink-900 px-3 py-1 rounded';
-        tabBtn.textContent = category;
-        tabBtn.onclick = () => document.getElementById(anchor).scrollIntoView({ behavior: 'smooth' });
-        tabsContainer.appendChild(tabBtn);
-
-        const section = document.createElement('div');
-        section.id = anchor;
-
-        const title = document.createElement('h2');
-        title.className = 'text-2xl font-bold text-pink-700 mb-2 sticky-header px-2 py-1';
-        title.innerHTML = `<button onclick="toggleSection('${anchor}-grid')" class="text-left w-full">${category}</button>`;
-
-        const grid = document.createElement('div');
-        grid.id = `${anchor}-grid`;
-        grid.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 transition-all duration-300';
-
-        items.forEach(item => {
-          const isAvailable = item.Available.toLowerCase() === 'true';
-          const card = document.createElement('div');
-          card.className = `item-card p-4 border bg-white rounded shadow ${isAvailable ? '' : 'item-disabled'}`;
-          const sizes = (item.Sizes || "250g,500g").split(',');
-          const priceList = (item.Prices || `${item.Price},${item.Price}`).split(',');
-          const image = item.ImageURL && item.ImageURL.startsWith('http') ? item.ImageURL : `https://placehold.co/400x300/f2d7b4/d2691e?text=Vanilla`;
-
-          let sizeButtons = sizes.map((size, idx) => {
-            const key = `${item.Product} - ${size}`;
-            return `
-              <div class="flex items-center justify-between mt-2">
-                <span class="text-sm">${size} - ₹${priceList[idx]}</span>
-                <div class="flex items-center gap-2">
-                  <button onclick="updateCart('${item.Product}', '${size}', '${priceList[idx]}', -1)" class="bg-pink-300 hover:bg-pink-400 px-2 py-1 rounded text-sm">-</button>
-                  <span class="qty-display w-8 text-center text-sm font-semibold" data-key="${key}">0</span>
-                  <button onclick="updateCart('${item.Product}', '${size}', '${priceList[idx]}', 1)" class="bg-pink-300 hover:bg-pink-400 px-2 py-1 rounded text-sm">+</button>
-                </div>
-              </div>
-            `;
-          }).join('');
-
-          card.innerHTML = `
-            <img src="${image}" class="mb-2 w-full h-48 object-cover rounded" />
-            <h4 class="text-lg font-semibold text-pink-800">${item.Product}</h4>
-            <p class="text-xs italic text-gray-500">${item.Tags || ""}</p>
-            ${sizeButtons}
-          `;
-          grid.appendChild(card);
+        // Category wise grouping
+        const grouped = {};
+        data.forEach(item => {
+          const category = item.Category || 'Others';
+          if (!grouped[category]) grouped[category] = [];
+          grouped[category].push(item);
         });
 
-        section.appendChild(title);
-        section.appendChild(grid);
-        sectionsContainer.appendChild(section);
+        // Har category ke liye section aur tab bana do
+        for (const [category, items] of Object.entries(grouped)) {
+          const anchor = category.replace(/\s+/g, '-').toLowerCase();
+
+          // Tab button
+          const tabBtn = document.createElement('button');
+          tabBtn.className = 'bg-pink-200 hover:bg-pink-300 text-pink-900 px-3 py-1 rounded';
+          tabBtn.textContent = category;
+          tabBtn.onclick = () => document.getElementById(anchor).scrollIntoView({ behavior: 'smooth' });
+          tabsContainer.appendChild(tabBtn);
+
+          // Section container
+          const section = document.createElement('div');
+          section.id = anchor;
+
+          const title = document.createElement('h2');
+          title.className = 'text-2xl font-bold text-pink-700 mb-2 sticky-header px-2 py-1';
+          title.innerHTML = `<button onclick="toggleSection('${anchor}-grid')" class="text-left w-full">${category}</button>`;
+
+          const grid = document.createElement('div');
+          grid.id = `${anchor}-grid`;
+          grid.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 transition-all duration-300';
+
+          // Items render karo
+          items.forEach(item => {
+            const isAvailable = item.Available.toLowerCase() === 'true';
+            const card = document.createElement('div');
+            card.className = `item-card p-4 border bg-white rounded shadow ${isAvailable ? '' : 'item-disabled'}`;
+
+            // Image, sizes, prices
+            const sizes = (item.Sizes || "250g,500g").split(',');
+            const priceList = (item.Prices || `${item.Price},${item.Price}`).split(',');
+            const image = item.ImageURL?.startsWith('http')
+              ? item.ImageURL
+              : `https://placehold.co/400x300/f2d7b4/d2691e?text=No+Image`;
+
+            // Tag badges
+            const tags = item.Tags ? item.Tags.split(',') : [];
+            const tagBadges = tags.map(tag => {
+              const t = tag.trim();
+              let bgClass, textClass;
+              switch (t.toLowerCase()) {
+                case 'best seller':
+                  bgClass = 'bg-red-500'; textClass = 'text-white'; break;
+                case 'premium':
+                  bgClass = 'bg-yellow-500'; textClass = 'text-white'; break;
+                case 'gluten free':
+                  bgClass = 'bg-cyan-500'; textClass = 'text-white'; break;
+                default:
+                  bgClass = 'bg-blue-500'; textClass = 'text-white';
+              }
+              return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${bgClass} ${textClass}">
+                        ${t}
+                      </span>`;
+            }).join('');
+
+            // Quantity buttons
+            const sizeButtons = sizes.map((size, idx) => {
+              const key = `${item.Product} - ${size}`;
+              const price = priceList[idx] || priceList[0];
+              return `
+                <div class="flex items-center justify-between mt-2">
+                  <span class="text-sm">${size} - ₹${price}</span>
+                  <div class="flex items-center gap-2">
+                    <button onclick="updateCart('${item.Product}', '${size}', '${price}', -1)" class="bg-pink-300 hover:bg-pink-400 px-2 py-1 rounded text-sm">-</button>
+                    <span class="qty-display w-8 text-center text-sm font-semibold" data-key="${key}">0</span>
+                    <button onclick="updateCart('${item.Product}', '${size}', '${price}', 1)" class="bg-pink-300 hover:bg-pink-400 px-2 py-1 rounded text-sm">+</button>
+                  </div>
+                </div>
+              `;
+            }).join('');
+
+            // Card HTML assemble
+            card.innerHTML = `
+              <img src="${image}" class="mb-2 w-full h-48 object-cover rounded" />
+              <h4 class="text-lg font-semibold text-pink-800">${item.Product}</h4>
+              <div class="flex flex-wrap gap-2 mb-2">
+                ${tagBadges}
+              </div>
+              ${sizeButtons}
+            `;
+
+            grid.appendChild(card);
+          });
+
+          // Section add karo
+          section.appendChild(title);
+          section.appendChild(grid);
+          sectionsContainer.appendChild(section);
+        }
+      } catch (err) {
+        console.error("Error fetching menu:", err);
       }
     }
+
 
     function toggleSection(id) {
       const grid = document.getElementById(id);
