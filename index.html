@@ -2,6 +2,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Yumm Healthy Bites</title>
@@ -39,6 +42,9 @@
     .cart-overlay.open {
       opacity: 1;
       visibility: visible;
+    }
+    .brand-font {
+      font-family: 'Pacifico', cursive;
     }
   </style>
 </head>
@@ -119,12 +125,25 @@
     </div>
   </div>
 
-  <header class="bg-pink-100 text-center py-6 shadow-md sticky top-0 z-20">
-    <h1 class="text-3xl font-bold text-pink-900">Yumm Healthy Bites</h1>
-    <p class="text-sm text-pink-700">Indulge your cravings without the guilt. Our baked goods are crafted with whole grains and jaggery.<br />
-    Candeur Sunshine, Kodigehalli, Bengaluru • +91 9767519630</p>
+  <header class="bg-pink-100 text-center py-6 shadow-md sticky top-0 z-20 flex flex-col items-center">
+    <!-- Logo -->
+    <img src="https://drive.google.com/uc?export=download&id=1ejkIHifsst30dzQjEzWZiUyWirwuVbyt" alt="Yumm Healthy Bites Logo" class="w-24 h-auto mb-2">
+
+    <!-- Brand Name with custom font and highlight -->
+    <h1 class="text-7xl font-extrabold text-pink-900 brand-font">
+      <span class="bg-gradient-to-r from-pink-400 to-pink-600 bg-clip-text text-transparent">
+        Yumm Healthy Bites
+      </span>
+    </h1>
+
+    <!-- Tagline -->
+    <p class="text-2xl text-pink-700 mt-1"></br>Indulge your cravings without the guilt. Our baked goods are crafted with whole grains and jaggery.</p>
+    <p class="text-m text-pink-600">Candeur Sunshine, Kodigehalli, Bengaluru • +91 9767519630</p>
+
+    <!-- Category tabs -->
     <div id="category-tabs" class="mt-4 flex flex-wrap justify-center gap-2"></div>
   </header>
+
 
   <main class="max-w-5xl mx-auto px-4 py-6">
     <div id="menu-sections" class="space-y-8"></div>
@@ -219,7 +238,11 @@
               </button>`;
 
             // Tag badges
-            const tags = item.Tags ? item.Tags.split(',') : [];
+            const tags = item.Tags
+              ? item.Tags.split(',')
+                  .map(t => t.trim())
+                  .filter(t => t.toLowerCase() !== 'na')
+              : [];
             const tagBadges = tags.map(tag => {
               const t = tag.trim();
               let bgClass, textClass;
