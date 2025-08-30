@@ -1,0 +1,23 @@
+<!-- components/product-card.html -->
+<div class="item-card p-4 border bg-white rounded shadow relative">
+  <!-- Product Image -->
+  <div class="product-image-container mb-3 relative">
+    <img src="" alt="Product" class="w-full h-48 object-cover rounded">
+    <div class="product-tags absolute top-2 left-2 flex flex-wrap gap-1"></div>
+  </div>
+
+  <!-- Product Title -->
+  <h4 class="text-lg font-semibold text-pink-800 mb-2">Product Name</h4>
+
+  <!-- Size / Variant Dropdown -->
+  <select class="w-full p-2 border border-gray-300 rounded text-sm mb-3"></select>
+
+  <!-- Add to Cart Button -->
+  <button 
+    class="w-full bg-pink-500 hover:bg-pink-600 text-white py-2 rounded text-sm add-to-cart-btn">
+    Add to Cart
+  </button>
+
+  <!-- Cart Info (updated dynamically) -->
+  <div class="card-cart-info text-xs text-pink-700 mt-3 flex flex-wrap gap-1"></div>
+</div>
