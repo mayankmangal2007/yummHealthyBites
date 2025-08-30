@@ -1,0 +1,47 @@
+<!-- components/cart.html -->
+<button id="cartButton" onclick="toggleCart()" class="fixed top-4 right-4 bg-pink-600 hover:bg-pink-700 text-white p-3 rounded-full shadow-lg z-30 transition-all duration-300">
+  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.07 5.36A2 2 0 0 0 7.86 21h8.28a2 2 0 0 0 1.93-2.64L16 13M7 13v6a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-6"/>
+  </svg>
+  <span id="cartCount" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
+</button>
+<div id="cartOverlay" class="cart-overlay fixed inset-0 bg-black bg-opacity-50 z-40" onclick="toggleCart()"></div>
+<div id="cartSlide" class="cart-slide fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-xl z-50 flex flex-col">
+  <div class="bg-pink-100 px-6 py-4 border-b flex items-center justify-between">
+    <h3 class="text-xl font-bold text-pink-900">Your Cart</h3>
+    <button onclick="toggleCart()" class="text-pink-600 hover:text-pink-800 text-2xl">×</button>
+  </div>
+  <div class="flex-1 overflow-y-auto px-6 py-4">
+    <div id="cartItems" class="space-y-4">
+      <div class="text-center text-gray-500 py-8">
+        <svg class="w-16 h-16 mx-auto mb-4 text-gray-300"></svg>
+        <p>Your cart is empty</p>
+        <p class="text-sm">Add some delicious items to get started!</p>
+      </div>
+    </div>
+  </div>
+  <div id="cartCheckoutForm" class="border-t bg-gray-50 px-6 py-4 space-y-3 hidden">
+    <h4 class="text-lg font-semibold text-pink-800 mb-3">Delivery Details</h4>
+    <input id="cartCustName" type="text" placeholder="Your Name" class="w-full p-2 border border-gray-300 rounded text-sm"/>
+    <input id="cartCustPhone" type="tel" placeholder="Phone (10 digits)" class="w-full p-2 border border-gray-300 rounded text-sm"/>
+    <input id="cartCustEmail" type="email" placeholder="Your Email" class="w-full p-2 border border-gray-300 rounded text-sm"/>
+    <input id="cartCustAddress" type="text" placeholder="Delivery Address" class="w-full p-2 border border-gray-300 rounded text-sm"/>
+    <textarea id="cartSpecialNotes" placeholder="Special Instructions" class="w-full p-2 border border-gray-300 rounded text-sm h-20 resize-none"></textarea>
+    <div id="cartValidationErrors" class="text-red-600 text-xs"></div>
+    <div class="space-y-2">
+      <button onclick="generateSummary(true)" class="w-full bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 rounded text-sm">View Order Summary</button>
+      <button onclick="sendOrderFromCart()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded text-sm flex items-center justify-center gap-2">
+        <svg class="w-4 h-4" fill="currentColor"></svg> Send Order via WhatsApp
+      </button>
+    </div>
+  </div>
+  <div class="border-t bg-gray-50 px-6 py-4">
+    <div class="flex justify-between items-center mb-4">
+      <span class="text-lg font-semibold">Total:</span>
+      <span id="cartTotal" class="text-xl font-bold text-pink-600">₹0.00</span>
+    </div>
+    <button id="checkoutButton" onclick="showCheckoutForm()" disabled class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed">
+      Continue to Order
+    </button>
+  </div>
+</div>
